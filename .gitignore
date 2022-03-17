@@ -1,2 +1,3 @@
 *.csv
 *.pyc
+/old_eval_data
