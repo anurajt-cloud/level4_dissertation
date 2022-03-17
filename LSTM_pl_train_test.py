@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import *
 import os
-import seaborn as sns
+#import seaborn as sns
 from sklearn import *
 from sklearn.metrics import *
 import tensorflow as tf
@@ -17,6 +17,7 @@ from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import MaxPooling1D
+
 
 # Check for GPU
 print("You are using Tensorflow version", tf.__version__)

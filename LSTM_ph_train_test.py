@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import *
 import os
-import seaborn as sns
+#import seaborn as sns
 from sklearn import *
 from sklearn.metrics import *
 import tensorflow as tf
