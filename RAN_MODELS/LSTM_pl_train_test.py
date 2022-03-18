@@ -18,6 +18,7 @@ from tensorflow.keras.layers import Flatten
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import MaxPooling1D
 
+
 # Check for GPU
 print("You are using Tensorflow version", tf.__version__)
 
@@ -29,10 +30,10 @@ print("-"*100)
 path = './'
 
 # Loading data
-train_c1 = np.genfromtxt(path+'Data/train_beats_sc.csv', delimiter=',')
-train_c0 = np.genfromtxt(path+'Data/train_beats_fc.csv', delimiter=',')
-test_c1 = np.genfromtxt(path+'Data/test_beats_sc.csv', delimiter=',')
-test_c0 = np.genfromtxt(path+'Data/test_beats_fc.csv', delimiter=',')
+train_c1 = np.genfromtxt(path+'Data/train_patients_sc.csv', delimiter=',')
+train_c0 = np.genfromtxt(path+'Data/train_patients_fc.csv', delimiter=',')
+test_c1 = np.genfromtxt(path+'Data/test_patients_sc.csv', delimiter=',')
+test_c0 = np.genfromtxt(path+'Data/test_patients_fc.csv', delimiter=',')
 
 train_x_c01 = np.concatenate((train_c0[:, :-2], train_c1[:, :-2]), axis=1)
 train_y_c01 = np.concatenate((train_c0[:, -2:], train_c1[:, -2:]), axis=1)
@@ -156,7 +157,7 @@ history = np.array([modelosses, modeleval_losses, modelacc, modeleval_acc])
 # Saving the data
 
 # Saving data LSTM patient leavout
-new_path = path+"eval_data_10k/lstm_ph/"
+new_path = path+"eval_data_10k/lstm_pl/"
 
 modelpreds = np.array(modelpreds)
 results = np.array(results)
@@ -167,10 +168,10 @@ np.save(new_path+"lstm_results.npy", results)
 np.save(new_path+"lstm_cms.npy", cms)
 np.save(new_path+"lstm_history.npy", history )
 
-# Saving the models
-sm_path = "./saved_models/lstm_ph/"
-for m in range(len(modellist)):
-    print("*"*10,"Model", m+1, "*"*10)
-    modellist[m].save(sm_path+"Model"+str(m)+".h5")
+# # Saving the models
+# sm_path = "./saved_models/lstm_pl/"
+# for m in range(len(modellist)):
+#     print("*"*10,"Model", m+1, "*"*10)
+#     modellist[m].save(sm_path+"Model"+str(m)+".h5")
 
 print("DONE!")
