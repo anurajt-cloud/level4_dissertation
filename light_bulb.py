@@ -79,16 +79,7 @@ def showResults(test, pred, model_name):
 X = np.concatenate((channel_1_data[:,:-2],channel_2_data[:,:-2]), axis=1)
 y = channel_1_data[:,-2]
 
-verbose = 1
-epochs = 10
-batch_size = 50
 
-opt = Adam(learning_rate=0.0001)
-
-reduce_lr = keras.callbacks.ReduceLROnPlateau(
-        factor=0.1,
-        patience=2,
-        min_lr=0.0001 * 0.0001)
 def getCNNModel(i1, i2):
     
     input = keras.layers.Input(shape=(i1,i2))
@@ -179,6 +170,17 @@ for train_ix, test_ix in kfold.split(X, y):
 
     train_y_sampled = np.concatenate(train_r_y)
     print(train_x_sampled.shape,train_y_sampled.shape)
+
+    verbose = 1
+    epochs = 10
+    batch_size = 50
+
+    opt = Adam(learning_rate=0.0001)
+
+    reduce_lr = keras.callbacks.ReduceLROnPlateau(
+            factor=0.1,
+            patience=2,
+            min_lr=0.0001 * 0.0001)
 
     train_x_sampled = train_x_sampled.reshape(-1, train_x_sampled.shape[1], 1).astype('float32')
     test_x = test_x.reshape(-1, test_x.shape[1], 1).astype('float32')
