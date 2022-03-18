@@ -167,4 +167,10 @@ np.save(new_path+"lstm_results.npy", results)
 np.save(new_path+"lstm_cms.npy", cms)
 np.save(new_path+"lstm_history.npy", history )
 
+# Saving the models
+sm_path = "./saved_models/lstm_ph/"
+for m in range(len(modellist)):
+    print("*"*10,"Model", m+1, "*"*10)
+    modellist[m].save(sm_path+"Model"+str(m)+".h5")
+
 print("DONE!")
