@@ -149,7 +149,7 @@ def training(model, train_x, train_y):
             predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
             e_loss = np.append(e_loss, epoch_loss.numpy())
             train_acc_fn(y_batch_train, predictions)
-
+            print(i)
         train_acc = train_acc_fn.result().numpy()
 
         # validating
