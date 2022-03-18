@@ -210,93 +210,93 @@ k = 1
 for train_ix, test_ix in kfold.split(X, y):
     train_x ,train_y = X[train_ix], y[train_ix]
     test_x ,test_y = X[test_ix], y[test_ix]
-    if k>=7:
-        N = train_x[train_y==1.0]
-        L = train_x[train_y==2.0]
-        R = train_x[train_y==3.0]
-        V = train_x[train_y==4.0]
-        A = train_x[train_y==5.0]
-        F = train_x[train_y==6.0]
-        f = train_x[train_y==7.0]
-        I = train_x[train_y==8.0]
+    
+    N = train_x[train_y==1.0]
+    L = train_x[train_y==2.0]
+    R = train_x[train_y==3.0]
+    V = train_x[train_y==4.0]
+    A = train_x[train_y==5.0]
+    F = train_x[train_y==6.0]
+    f = train_x[train_y==7.0]
+    I = train_x[train_y==8.0]
 
-        seed=42
-        np.random.seed(seed)
-        def downsample(arr, n, seed):
-            downsampled = resample(arr,replace=False,n_samples=n, random_state=seed)
-            return downsampled
+    seed=42
+    np.random.seed(seed)
+    def downsample(arr, n, seed):
+        downsampled = resample(arr,replace=False,n_samples=n, random_state=seed)
+        return downsampled
 
-        def upsample(arr, n, seed):
-            upsampled = resample(arr,replace=True,n_samples=n,random_state=seed)
-            return upsampled
+    def upsample(arr, n, seed):
+        upsampled = resample(arr,replace=True,n_samples=n,random_state=seed)
+        return upsampled
 
-        all_class = [N,L,R,V,A,F,f,I]
-        abn_class = [L,R,V,A,F,f,I]
-        print("staring resampling")
-        mean_val = np.mean([len(i) for i in abn_class], dtype= int)
-        train_r_x = []
-        train_r_y = []
-        # Resampling the data
-        for i in range(len(all_class)):
-            if all_class[i].shape[0]> mean_val:
-                all_class[i] = downsample(all_class[i],mean_val,seed)
-            elif all_class[i].shape[0]< mean_val:
-                all_class[i] = upsample(all_class[i], mean_val,seed)
-            
-            train_r_x.append(all_class[i])
-            train_r_y.append(np.full(all_class[i].shape[0], i+1))
-        # Shuffling and saving the data into files
-        train_x_sampled = np.concatenate(train_r_x)
-
-        train_y_sampled = np.concatenate(train_r_y)
-        print(train_x_sampled.shape,train_y_sampled.shape)
-
-        verbose = 1
-        epochs = 10
-        batch_size = 50
-
-        opt = Adam(learning_rate=0.0001)
-
-        reduce_lr = keras.callbacks.ReduceLROnPlateau(
-                factor=0.1,
-                patience=2,
-                min_lr=0.0001 * 0.0001)
-
-        train_x_sampled = train_x_sampled.reshape(-1, train_x_sampled.shape[1], 1).astype('float32')
-        test_x = test_x.reshape(-1, test_x.shape[1], 1).astype('float32')
-        print(train_x_sampled.shape[1], test_x.shape[2])
-        train_y_sampled = tf.keras.utils.to_categorical(train_y_sampled)
+    all_class = [N,L,R,V,A,F,f,I]
+    abn_class = [L,R,V,A,F,f,I]
+    print("staring resampling")
+    mean_val = np.mean([len(i) for i in abn_class], dtype= int)
+    train_r_x = []
+    train_r_y = []
+    # Resampling the data
+    for i in range(len(all_class)):
+        if all_class[i].shape[0]> mean_val:
+            all_class[i] = downsample(all_class[i],mean_val,seed)
+        elif all_class[i].shape[0]< mean_val:
+            all_class[i] = upsample(all_class[i], mean_val,seed)
         
-        print("*"*15, "Model", k, "*"*15)
-        model = getCNNModel(train_x_sampled.shape[1],train_x_sampled.shape[2])
-        #h = model.fit(train_x_sampled,train_y_sampled,epochs=epochs,batch_size=batch_size,validation_split=0.1,verbose=verbose, callbacks=[reduce_lr])
-        
-        lamb = 0.0001
-        num_epochs = 10
-        batch_size = 50
-        optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
-        loss_fn = tf.keras.losses.CategoricalCrossentropy()
-        val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
-        train_acc_fn = tf.keras.metrics.CategoricalAccuracy()
-        val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
-        test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+        train_r_x.append(all_class[i])
+        train_r_y.append(np.full(all_class[i].shape[0], i+1))
+    # Shuffling and saving the data into files
+    train_x_sampled = np.concatenate(train_r_x)
 
-        tl, vl, ta, va = training(model, train_x_sampled, train_y_sampled)
-        
-        history = np.array([tl, vl, ta, va])
+    train_y_sampled = np.concatenate(train_r_y)
+    print(train_x_sampled.shape,train_y_sampled.shape)
 
-        preds = np.argmax(model.predict(test_x, verbose=1),axis=1)
-        
-        results = showResults(test_y, preds, "Model_cv"+str(k))
+    verbose = 1
+    epochs = 10
+    batch_size = 50
 
-        cms = confusion_matrix(test_y, preds, normalize='true')
-        
-        new_path = './eval_data_10k/cnn_ph_ig/'
+    opt = Adam(learning_rate=0.0001)
 
-        model.save(new_path+'Model_cv'+str(k)+'.h5')
-        np.save(new_path+"preds_cv"+str(k)+'.npy', preds)
-        np.save(new_path+"results_cv"+str(k)+'.npy', results)
-        np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
-        np.save(new_path+"history_cv"+str(k)+'.npy', history)
-        tf.keras.backend.clear_session()
+    reduce_lr = keras.callbacks.ReduceLROnPlateau(
+            factor=0.1,
+            patience=2,
+            min_lr=0.0001 * 0.0001)
+
+    train_x_sampled = train_x_sampled.reshape(-1, train_x_sampled.shape[1], 1).astype('float32')
+    test_x = test_x.reshape(-1, test_x.shape[1], 1).astype('float32')
+    print(train_x_sampled.shape[1], test_x.shape[2])
+    train_y_sampled = tf.keras.utils.to_categorical(train_y_sampled)
+    
+    print("*"*15, "Model", k, "*"*15)
+    model = getCNNModel(train_x_sampled.shape[1],train_x_sampled.shape[2])
+    #h = model.fit(train_x_sampled,train_y_sampled,epochs=epochs,batch_size=batch_size,validation_split=0.1,verbose=verbose, callbacks=[reduce_lr])
+    
+    lamb = 0.0001
+    num_epochs = 10
+    batch_size = 50
+    optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
+    loss_fn = tf.keras.losses.CategoricalCrossentropy()
+    val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
+    train_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+    val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+    test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+
+    tl, vl, ta, va = training(model, train_x_sampled, train_y_sampled)
+    
+    history = np.array([tl, vl, ta, va])
+
+    preds = np.argmax(model.predict(test_x, verbose=1),axis=1)
+    
+    results = showResults(test_y, preds, "Model_cv"+str(k))
+
+    cms = confusion_matrix(test_y, preds, normalize='true')
+    
+    new_path = './eval_data_10k/cnn_ph_ig/'
+
+    model.save(new_path+'Model_cv'+str(k)+'.h5')
+    np.save(new_path+"preds_cv"+str(k)+'.npy', preds)
+    np.save(new_path+"results_cv"+str(k)+'.npy', results)
+    np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
+    np.save(new_path+"history_cv"+str(k)+'.npy', history)
+    tf.keras.backend.clear_session()
     k+=1
