@@ -277,7 +277,7 @@ np.save(new_path+"cnn_cms.npy", cms)
 np.save(new_path+"cnn_history.npy", history)
 
 # Saving the models
-sm_path = "./saved_models/"
+sm_path = "./saved_models/cnn_pl_ig/"
 for m in range(len(modellist)):
     print("*"*10,"Model", m+1, "*"*10)
-    modellist[m].save(path+"Model"+str(m))
+    modellist[m].save(sm_path+"Model"+str(m))
