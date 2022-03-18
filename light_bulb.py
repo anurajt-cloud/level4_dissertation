@@ -207,4 +207,6 @@ for train_ix, test_ix in kfold.split(X, y):
     np.save(new_path+"results_cv"+str(k)+'.npy', results)
     np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
     np.save(new_path+"history_cv"+str(k)+'.npy', history)
+    tf.keras.backend.clear_session()
+
     
