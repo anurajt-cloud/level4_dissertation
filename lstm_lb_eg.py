@@ -146,7 +146,7 @@ def training(model, train_x, train_y):
             x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
             y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
 
-            predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
+            predictions,epoch_loss = train_step(model, tf.convert_to_tensor(x_batch_train), tf.convert_to_tensor(y_batch_train))
             e_loss = np.append(e_loss, epoch_loss.numpy())
             train_acc_fn(y_batch_train, predictions)
             print(i)
