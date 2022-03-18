@@ -127,7 +127,7 @@ def getCNNModel(i1, i2):
 
 
 #train step
-@tf.function
+# @tf.function
 def train_step(model_m, inputs, labels):
     with tf.GradientTape() as tape:
         tape.watch(tf.convert_to_tensor(inputs))
@@ -138,10 +138,10 @@ def train_step(model_m, inputs, labels):
         if len(model_m.losses) > 0:
             regularization_loss = tf.math.add_n(model_m.losses)
             total_loss = total_loss + regularization_loss
-        # ig =  IntegratedGradients(model=model_m)
-        # exp = ig.explain(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
-        # attributions = exp.attributions[0]
-        attributions = eager_ops.expected_gradients(inputs, labels, model_m)
+        ig =  IntegratedGradients(model=model_m)
+        exp = ig.explain(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
+        attributions = exp.attributions[0]
+        # attributions = eager_ops.expected_gradients(inputs, labels, model_m)
         summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
 
         normalized_attributions = tf.image.per_image_standardization(summed_attributions)
@@ -183,7 +183,7 @@ def training(model, train_x, train_y):
             predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
             e_loss = np.append(e_loss, epoch_loss.numpy())
             train_acc_fn(y_batch_train, predictions)
-
+            print(i)
         train_acc = train_acc_fn.result().numpy()
 
         # validating
