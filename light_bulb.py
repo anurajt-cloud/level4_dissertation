@@ -203,10 +203,8 @@ for train_ix, test_ix in kfold.split(X, y):
     new_path = './eval_data_10k/cnn_ph/'
 
     model.save(new_path+'Model_cv'+str(k)+'.h5')
-    np.save("preds_cv"+str(k)+'.npy', preds)
-    np.save("results_cv"+str(k)+'.npy', results)
-    np.save("cms_cv"+str(k)+'.npy', cms)
-    np.save("history_cv"+str(k)+'.npy', history)
-    
-    break
+    np.save(new_path+"preds_cv"+str(k)+'.npy', preds)
+    np.save(new_path+"results_cv"+str(k)+'.npy', results)
+    np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
+    np.save(new_path+"history_cv"+str(k)+'.npy', history)
     
