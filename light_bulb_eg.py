@@ -263,6 +263,8 @@ for train_ix, test_ix in kfold.split(X, y):
     test_x = test_x.reshape(-1, test_x.shape[1], 1).astype('float32')
     print(train_x_sampled.shape[1], test_x.shape[2])
     train_y_sampled = tf.keras.utils.to_categorical(train_y_sampled)
+    
+    print("*"*15, "Model", k, "*"*15)
     model = getCNNModel(train_x_sampled.shape[1],train_x_sampled.shape[2])
     #h = model.fit(train_x_sampled,train_y_sampled,epochs=epochs,batch_size=batch_size,validation_split=0.1,verbose=verbose, callbacks=[reduce_lr])
     
