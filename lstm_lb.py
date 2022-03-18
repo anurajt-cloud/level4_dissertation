@@ -157,7 +157,7 @@ for train_ix, test_ix in kfold.split(X, y):
     print(train_x_sampled.shape[1], test_x.shape[2])
     train_y_sampled = tf.keras.utils.to_categorical(train_y_sampled)
     model = getlstmModel(train_x_sampled.shape[1],train_x_sampled.shape[2])
-    h = model.fit(train_x_sampled,train_y_sampled,epochs=epochs,batch_size=batch_size,validation_split=0.1,verbose=verbose, callbacks=[reduce_lr])
+    h = model.fit(train_x_sampled, train_y_sampled, epochs=epochs, verbose=verbose, validation_split=0.2, batch_size = batch_size)
     
     tl = h.history['loss']
     vl = h.history['val_loss']
