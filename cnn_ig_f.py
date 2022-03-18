@@ -253,7 +253,7 @@ for train_ix, test_ix in kfold.split(X, y):
 
     verbose = 1
     epochs = 10
-    batch_size = 50
+    batch_size = 25
 
     opt = Adam(learning_rate=0.0001)
 
