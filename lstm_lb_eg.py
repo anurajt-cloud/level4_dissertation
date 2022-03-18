@@ -101,7 +101,7 @@ def train_step(model_m, inputs, labels):
         predictions = model_m(inputs, training=True)
         pred_loss = loss_fn(labels, predictions)
         total_loss = pred_loss
-
+        print("in train step")
         if len(model_m.losses) > 0:
             regularization_loss = tf.math.add_n(model_m.losses)
             total_loss = total_loss + regularization_loss
@@ -140,7 +140,7 @@ def training(model, train_x, train_y):
         # extracting the validation set
         val_x = train_x[val_indices]
         val_y = train_y[val_indices]
-        
+        print("in training")
         e_loss = np.array([])
         for i in range(0, len(new_train_x), batch_size):
             x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
