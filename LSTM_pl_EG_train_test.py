@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import *
 import os
-import seaborn as sns
+#import seaborn as sns
 from sklearn import *
 from sklearn.metrics import *
 import tensorflow as tf
@@ -169,7 +169,7 @@ def training(model):
             y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
 
             predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
-
+            print(i)
             train_acc_fn(y_batch_train, predictions)
 
         train_acc = train_acc_fn.result().numpy()
