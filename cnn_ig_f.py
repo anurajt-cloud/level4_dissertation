@@ -139,10 +139,10 @@ def train_step(model_m, inputs, labels):
             regularization_loss = tf.math.add_n(model_m.losses)
             total_loss = total_loss + regularization_loss
 
-        ig =  IntegratedGradients(model=model_m)
-        exp = ig.explain(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
-        attributions = exp.attributions[0]
-
+        # ig =  IntegratedGradients(model=model_m)
+        # exp = ig.explain(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
+        # attributions = exp.attributions[0]
+        attributions = eager_ops.expected_gradients(inputs, labels, model_m)
         summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
 
         normalized_attributions = tf.image.per_image_standardization(summed_attributions)
