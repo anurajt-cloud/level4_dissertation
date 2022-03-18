@@ -74,7 +74,7 @@ def showResults(test, pred, model_name):
     print("f1score micro : {}".format(f1score_micro))
     cm=confusion_matrix(test, pred, labels=[1,2,3,4,5,6,7,8])
     return [model_name, round(accuracy,3), round(precision,3) , round(recall,3) , round(f1score_macro,3), 
-            round(f1score_micro, 3), cm)]
+            round(f1score_micro, 3), cm]
 
 X = np.concatenate((channel_1_data[:,:-2],channel_2_data[:,:-2]), axis=1)
 y = channel_1_data[:,-2]
