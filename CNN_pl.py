@@ -17,6 +17,40 @@ from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import MaxPooling1D
+import numpy as np
+import glob
+import matplotlib.pyplot as plt
+import pandas as pd
+from scipy import *
+import os
+import seaborn as sns
+from sklearn import *
+from sklearn.metrics import *
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, BatchNormalization
+from tensorflow.keras.models import Model
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.layers import Conv1D
+from tensorflow.keras.layers import MaxPooling1D, LeakyReLU
+from sklearn.utils import shuffle
+from tensorflow import keras
+from tensorflow.keras.layers import Lambda
+from tensorflow.keras.layers import Add
+from tensorflow.keras.layers import Activation
+import itertools
+import time
+from sklearn.utils import resample
+from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.optimizers import Adam
+import ECG.eager_ops
+from ECG import eager_ops
+from tensorflow.keras.losses import CategoricalCrossentropy
+from tensorflow.keras.metrics import CategoricalAccuracy
+from sklearn.model_selection import train_test_split
+
 
 
 # Check for GPU
@@ -75,43 +109,69 @@ def showResults(test, pred, model_name):
 verbose, epoch, batch_size = 1, 10, 50
 activationFunction='relu'
 
-def getlstmModel():
+opt = Adam(learning_rate=0.001)
+
+def getCNNModel():
     
-    lstmmodel = Sequential()
-    lstmmodel.add(LSTM(128, return_sequences=True, input_shape=(train_x.shape[1],train_x.shape[2])))
-    lstmmodel.add(LSTM(9, return_sequences=True))
-    lstmmodel.add(MaxPooling1D(pool_size=4,padding='same'))
-    lstmmodel.add(Flatten())
-    lstmmodel.add(Dense(256, activation=tf.nn.relu))    
-    lstmmodel.add(Dense(128, activation=tf.nn.relu))    
-    lstmmodel.add(Dense(32, activation=tf.nn.relu))
-    lstmmodel.add(Dense(9, activation='softmax'))
-    lstmmodel.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['accuracy'])
-    # lstmmodel.summary()
-    return lstmmodel
-# lstmmodel = getlstmModel()
+    input = keras.layers.Input(shape=(train_x.shape[1],train_x.shape[2]))
+    x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, kernel_initializer='VarianceScaling')(input)
+    x = keras.layers.BatchNormalization()(x)
+    x = keras.layers.LeakyReLU(alpha=0.3)(x)
 
-# lstmhistory= lstmmodel.fit(train_x, train_y, epochs=epoch, verbose=verbose, validation_split=0.2, batch_size = batch_size)
-# lstmpredictions = lstmmodel.predict(test_x, verbose=1)
+    #block 2
 
-# List of models
-lstm1 = getlstmModel()
-# lstm2 = getlstmModel()
-# lstm3 = getlstmModel()
-# lstm4 = getlstmModel()
-# lstm5 = getlstmModel()
-# lstm6 = getlstmModel()
-# lstm7 = getlstmModel()
-# lstm8 = getlstmModel()
-# lstm9 = getlstmModel()
-# lstm10 = getlstmModel()
+    x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, kernel_initializer='VarianceScaling')(x)
+    x = keras.layers.BatchNormalization()(x)
+    x = keras.layers.LeakyReLU(alpha=0.3)(x)
+    x = keras.layers.Dropout(0.2)(x)
 
-modellist = [lstm1]#,lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
+    #block 3
+    for i in range(4):
+
+
+        shortcut = MaxPooling1D(pool_size=1)(x)
+
+        filters = 64 * ((i//2)+1)
+        # print("Filter size = "+str(filters))
+        x = keras.layers.Conv1D(kernel_size=16, filters=filters, strides=1, use_bias=True, padding="same", kernel_initializer='VarianceScaling')(x)
+        x = keras.layers.BatchNormalization()(x)
+        x = keras.layers.LeakyReLU(alpha=0.3)(x)
+
+        x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, padding="same", kernel_initializer='VarianceScaling')(x)
+
+        x = keras.layers.LeakyReLU(alpha=0.3)(x)
+        x = keras.layers.Dropout(0.2)(x)
+    
+
+        x = tf.keras.layers.Add()([x, shortcut])
+
+
+    x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, kernel_initializer='VarianceScaling')(x)
+    x = keras.layers.BatchNormalization()(x)
+    x = keras.layers.LeakyReLU(alpha=0.3)(x)
+    x = keras.layers.Flatten()(x)
+    out = keras.layers.Dense(9, activation='softmax')(x)
+    model = tf.keras.models.Model(inputs=[input], outputs=out)
+    model.compile(loss='categorical_crossentropy',optimizer=opt,metrics=['accuracy'])
+    return model
+
+cnn1 = getCNNModel()
+# cnn2 = getCNNModel()
+# cnn3 = getCNNModel()
+# cnn4 = getCNNModel()
+# cnn5 = getCNNModel()
+# cnn6 = getCNNModel()
+# cnn7 = getCNNModel()
+# cnn8 = getCNNModel()
+# cnn9 = getCNNModel()
+# cnn10 = getCNNModel()
+
+modellist = [cnn1]#, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
 
 # Fiiting all the models
 modelhistory = []
 for m in modellist:
-  modelhistory.append(m.fit(train_x, train_y, epochs=epoch, verbose=verbose, validation_split=0.2, batch_size = batch_size))
+  modelhistory.append(m.fit(train_x, train_y, epochs=epoch, verbose=verbose, validation_split=0.1, batch_size = batch_size))
 
 print("-"*100)
 
@@ -169,7 +229,7 @@ np.save(new_path+"lstm_cms.npy", cms)
 np.save(new_path+"lstm_history.npy", history )
 
 # Saving the models
-sm_path = "./saved_models/lstm_pl/"
+sm_path = "./saved_models/cnn_pl/"
 for m in range(len(modellist)):
     print("*"*10,"Model", m+1, "*"*10)
     modellist[m].save(sm_path+"Model"+str(m)+".h5")
