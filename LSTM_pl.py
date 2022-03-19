@@ -111,7 +111,7 @@ modellist = [lstm1]#,lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
 # Fiiting all the models
 modelhistory = []
 for m in modellist:
-  modelhistory.append(m.fit(train_x, train_y, epochs=epoch, verbose=verbose, validation_split=0.2, batch_size = batch_size))
+  modelhistory.append(m.fit(train_x, train_y, epochs=epoch, verbose=verbose, validation_split=0.1, batch_size = batch_size))
 
 print("-"*100)
 
