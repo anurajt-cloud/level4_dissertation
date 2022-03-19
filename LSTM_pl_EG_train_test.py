@@ -103,7 +103,7 @@ lstm1 = getlstmModel()
 # lstm9 = getlstmModel()
 # lstm10 = getlstmModel()
 
-modellist = [lstm1],lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
+modellist = [lstm1]#,lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
 
 # Defining training functions and parameters
 lamb = 0.0001
