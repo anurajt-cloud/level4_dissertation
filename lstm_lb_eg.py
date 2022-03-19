@@ -143,7 +143,7 @@ def training(model, train_x, train_y, bs):
         # val_x = train_x[val_indices]
         # val_y = train_y[val_indices]
         # print("in training")
-        e_loss = tf.constant([0])
+        e_loss = tf.constant([0], dtype=tf.float32)
         for i,(batch_x, batch_y) in enumerate(train_x_batches):
             # x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
             # y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
