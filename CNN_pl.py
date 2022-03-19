@@ -217,16 +217,16 @@ history = np.array([modelosses, modeleval_losses, modelacc, modeleval_acc])
 # Saving the data
 
 # Saving data LSTM patient leavout
-new_path = path+"eval_data_10k/lstm_pl/"
+new_path = path+"eval_data_10k/cnn_pl/"
 
 modelpreds = np.array(modelpreds)
 results = np.array(results)
 cms = np.array(cms)
 # modelhistory = np.array(modelhistory)
-np.save(new_path+"lstm_modelpreds.npy", modelpreds)
-np.save(new_path+"lstm_results.npy", results)
-np.save(new_path+"lstm_cms.npy", cms)
-np.save(new_path+"lstm_history.npy", history )
+np.save(new_path+"modelpreds.npy", modelpreds)
+np.save(new_path+"results.npy", results)
+np.save(new_path+"cms.npy", cms)
+np.save(new_path+"history.npy", history )
 
 # Saving the models
 sm_path = "./saved_models/cnn_pl/"
