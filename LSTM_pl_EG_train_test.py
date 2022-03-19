@@ -93,17 +93,17 @@ def getlstmModel():
 
 # List of models
 lstm1 = getlstmModel()
-lstm2 = getlstmModel()
-lstm3 = getlstmModel()
-lstm4 = getlstmModel()
-lstm5 = getlstmModel()
-lstm6 = getlstmModel()
-lstm7 = getlstmModel()
-lstm8 = getlstmModel()
-lstm9 = getlstmModel()
-lstm10 = getlstmModel()
+# lstm2 = getlstmModel()
+# lstm3 = getlstmModel()
+# lstm4 = getlstmModel()
+# lstm5 = getlstmModel()
+# lstm6 = getlstmModel()
+# lstm7 = getlstmModel()
+# lstm8 = getlstmModel()
+# lstm9 = getlstmModel()
+# lstm10 = getlstmModel()
 
-modellist = [lstm1,lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
+modellist = [lstm1],lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
 
 # Defining training functions and parameters
 lamb = 0.0001
@@ -117,6 +117,7 @@ val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
 test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
 
 #train step
+@tf.function
 def train_step(model_m, inputs, labels):
     with tf.GradientTape() as tape:
         tape.watch(tf.convert_to_tensor(inputs))
@@ -240,7 +241,7 @@ for p in modelpreds:
     cms.append(confusion_matrix(cnn_actual_value, p, normalize='true'))
 
 # Saving the data
-new_path = path+"eval_data_10k/cnn_ph_eg/"
+new_path = path+"eval_data_10k/lstm_pl_eg/"
 
 modelpreds = np.array(modelpreds)
 results = np.array(results)
