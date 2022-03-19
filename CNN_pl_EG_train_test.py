@@ -137,17 +137,17 @@ def getCNNModel():
     return model
 
 cnn1 = getCNNModel()
-cnn2 = getCNNModel()
-cnn3 = getCNNModel()
-cnn4 = getCNNModel()
-cnn5 = getCNNModel()
-cnn6 = getCNNModel()
-cnn7 = getCNNModel()
-cnn8 = getCNNModel()
-cnn9 = getCNNModel()
-cnn10 = getCNNModel()
+# cnn2 = getCNNModel()
+# cnn3 = getCNNModel()
+# cnn4 = getCNNModel()
+# cnn5 = getCNNModel()
+# cnn6 = getCNNModel()
+# cnn7 = getCNNModel()
+# cnn8 = getCNNModel()
+# cnn9 = getCNNModel()
+# cnn10 = getCNNModel()
 
-modellist = [cnn1, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
+modellist = [cnn1]#, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
 
 lamb = 0.0001
 num_epochs = 10
@@ -160,6 +160,7 @@ val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
 test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
 
 #train step
+@tf.function
 def train_step(model_m, inputs, labels):
     with tf.GradientTape() as tape:
         tape.watch(tf.convert_to_tensor(inputs))
@@ -196,7 +197,7 @@ def training(model):
     for epoch in range(num_epochs):
         indices = np.random.permutation(len(train_x))
         # train validaion split
-        train_indices, val_indices = train_test_split(indices, test_size=0.2, stratify=train_y[indices])
+        train_indices, val_indices = train_test_split(indices, test_size=0.1, stratify=train_y[indices])
         # extracting the training set
         new_train_x = train_x[train_indices]
         new_train_y = train_y[train_indices]
