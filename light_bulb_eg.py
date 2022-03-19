@@ -284,7 +284,7 @@ for train_ix, test_ix in kfold.split(X, y):
 
     preds = model.predict(test_x, verbose=1)
     
-    results = showResults(test_y, preds, "Model_cv"+str(k))
+    results = showResults(test_y,np.argmax( preds,axis=1), "Model_cv"+str(k))
 
     cms = confusion_matrix(test_y, np.argmax(preds,axis=1), normalize='true')
     

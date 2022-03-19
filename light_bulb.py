@@ -200,7 +200,7 @@ for train_ix, test_ix in kfold.split(X, y):
     
     results = showResults(test_y, np.argmax(preds, axis=1), "Model_cv"+str(k))
 
-    cms = confusion_matrix(test_y, preds, normalize='true')
+    cms = confusion_matrix(test_y,np.argmax( preds, axis=1), normalize='true')
     
     new_path = './eval_data_10k/cnn_ph/'
 

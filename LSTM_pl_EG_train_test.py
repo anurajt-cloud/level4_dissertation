@@ -238,7 +238,7 @@ print("-"*100)
 
 cms = []
 for p in modelpreds:
-    cms.append(confusion_matrix(cnn_actual_value, p, normalize='true'))
+    cms.append(confusion_matrix(cnn_actual_value, np.argmax(p, axis=1), normalize='true'))
 
 # Saving the data
 new_path = path+"eval_data_10k/lstm_pl_eg/"

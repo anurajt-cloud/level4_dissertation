@@ -269,7 +269,7 @@ for p in range(len(modelpreds)):
 
 cms = []
 for p in modelpreds:
-    cms.append(confusion_matrix(cnn_actual_value, p, normalize='true'))
+    cms.append(confusion_matrix(cnn_actual_value, np.argmax(p,axis=1), normalize='true'))
 
 # Saving data LSTM patient leavout
 new_path = path+"eval_data_10k/cnn_pl_eg/"
