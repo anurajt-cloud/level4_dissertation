@@ -143,15 +143,15 @@ def training(model, train_x, train_y, bs):
         # val_x = train_x[val_indices]
         # val_y = train_y[val_indices]
         # print("in training")
-        e_loss = tf.constant([0], dtype=tf.float32)
+        # e_loss = tf.constant([0], dtype=tf.float32)
         for i,(batch_x, batch_y) in enumerate(train_x_batches):
             # x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
             # y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
 
-            predictions,epoch_loss = train_step(model, batch_x, batch_y)
-            e_loss = tf.concat([e_loss, epoch_loss], axis=0)
+            predictions,batch_loss = train_step(model, batch_x, batch_y)
+            # e_loss = tf.concat([e_loss, epoch_loss], axis=0)
             train_acc_fn(batch_y, predictions)
-            print(i)
+            print(i, batch_loss)
         train_acc = train_acc_fn.result().numpy()
 
         # validating
@@ -166,7 +166,7 @@ def training(model, train_x, train_y, bs):
         # validation_acc.append(val_acc_fn.result().numpy())
         # validation_loss.append(val_loss)
 
-        print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, e_loss.mean().numpy(), val_acc_fn.result().numpy(), 0, time.time()-start_time))
+        print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, 0, val_acc_fn.result().numpy(), 0, time.time()-start_time))
 
         start_time = time.time()
         train_acc_fn.reset_states()
