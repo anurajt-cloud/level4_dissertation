@@ -126,6 +126,7 @@ def getCNNModel(i1, i2):
 
 
 #train step
+@tf.function
 def train_step(model_m, inputs, labels):
     with tf.GradientTape() as tape:
         tape.watch(tf.convert_to_tensor(inputs))
