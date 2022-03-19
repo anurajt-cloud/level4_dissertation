@@ -221,7 +221,7 @@ print("-"*100)
 modelpreds = []
 for m in range(len(modellist)):
     print("*"*10, "Model", m+1, "*"*10)
-    modelpreds.append(np.argmax(modellist[m].predict(test_x, verbose=1),axis=1))
+    modelpreds.append(modellist[m].predict(test_x, verbose=1),axis=1)
 
 print("-"*100)
 
