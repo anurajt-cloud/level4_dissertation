@@ -1,4 +1,5 @@
 # Imports
+from unittest import result
 import numpy as np
 import glob
 import matplotlib.pyplot as plt
@@ -25,9 +26,9 @@ from sklearn.model_selection import train_test_split
 import time
 
 
-print("You are using Tensorflow version", tf.__version__)
+# print("You are using Tensorflow version", tf.__version__)
 
-print(tf.config.list_physical_devices('GPU'))
+# print(tf.config.list_physical_devices('GPU'))
 
 path = './'
 
@@ -105,151 +106,160 @@ lstm1 = getlstmModel()
 
 modellist = [lstm1]#,lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
 
-# Defining training functions and parameters
-lamb = 0.0001
-num_epochs = 10
-batch_size = 50
-optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
-loss_fn = tf.keras.losses.CategoricalCrossentropy()
-val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
-train_acc_fn = tf.keras.metrics.CategoricalAccuracy()
-val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
-test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+# # Defining training functions and parameters
+# lamb = 0.0001
+# num_epochs = 10
+# batch_size = 50
+# optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
+# loss_fn = tf.keras.losses.CategoricalCrossentropy()
+# val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
+# train_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+# val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+# test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
 
-#train step
-@tf.function
-def train_step(model_m, inputs, labels):
-    with tf.GradientTape() as tape:
-        tape.watch(tf.convert_to_tensor(inputs))
-        predictions = model_m(inputs, training=True)
-        pred_loss = loss_fn(labels, predictions)
-        total_loss = pred_loss
+# #train step
+# @tf.function
+# def train_step(model_m, inputs, labels):
+#     with tf.GradientTape() as tape:
+#         tape.watch(tf.convert_to_tensor(inputs))
+#         predictions = model_m(inputs, training=True)
+#         pred_loss = loss_fn(labels, predictions)
+#         total_loss = pred_loss
 
-        if len(model_m.losses) > 0:
-            regularization_loss = tf.math.add_n(model_m.losses)
-            total_loss = total_loss + regularization_loss
+#         if len(model_m.losses) > 0:
+#             regularization_loss = tf.math.add_n(model_m.losses)
+#             total_loss = total_loss + regularization_loss
 
-        attributions = eager_ops.expected_gradients(inputs, labels, model_m)
+#         attributions = eager_ops.expected_gradients(inputs, labels, model_m)
 
-        summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
+#         summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
 
-        normalized_attributions = tf.image.per_image_standardization(summed_attributions)
+#         normalized_attributions = tf.image.per_image_standardization(summed_attributions)
 
-        attribution_loss = lamb * tf.reduce_mean(tf.image.total_variation(normalized_attributions))
+#         attribution_loss = lamb * tf.reduce_mean(tf.image.total_variation(normalized_attributions))
 
-        total_loss+= attribution_loss
+#         total_loss+= attribution_loss
     
-    gradients = tape.gradient(total_loss, model_m.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, model_m.trainable_variables))
-    return predictions,total_loss
+#     gradients = tape.gradient(total_loss, model_m.trainable_variables)
+#     optimizer.apply_gradients(zip(gradients, model_m.trainable_variables))
+#     return predictions,total_loss
 
-# function to train a model
-def training(model):
-    training_acc = []
-    training_loss = []
-    validation_acc = []
-    validation_loss = []
+# # function to train a model
+# def training(model):
+#     training_acc = []
+#     training_loss = []
+#     validation_acc = []
+#     validation_loss = []
 
-    start_time = time.time()
-    for epoch in range(num_epochs):
-        indices = np.random.permutation(len(train_x))
-        # train validaion split
-        train_indices, val_indices = train_test_split(indices, test_size=0.2, stratify=train_y[indices])
-        # extracting the training set
-        new_train_x = train_x[train_indices]
-        new_train_y = train_y[train_indices]
-        # generating indices for training batches
-        new_indices = np.random.permutation(len(new_train_x))
-        # extracting the validation set
-        val_x = train_x[val_indices]
-        val_y = train_y[val_indices]
+#     start_time = time.time()
+#     for epoch in range(num_epochs):
+#         indices = np.random.permutation(len(train_x))
+#         # train validaion split
+#         train_indices, val_indices = train_test_split(indices, test_size=0.2, stratify=train_y[indices])
+#         # extracting the training set
+#         new_train_x = train_x[train_indices]
+#         new_train_y = train_y[train_indices]
+#         # generating indices for training batches
+#         new_indices = np.random.permutation(len(new_train_x))
+#         # extracting the validation set
+#         val_x = train_x[val_indices]
+#         val_y = train_y[val_indices]
         
 
-        for i in range(0, len(new_train_x), batch_size):
-            x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
-            y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
+#         for i in range(0, len(new_train_x), batch_size):
+#             x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
+#             y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
 
-            predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
-            print(i)
-            train_acc_fn(y_batch_train, predictions)
+#             predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
+#             print(i)
+#             train_acc_fn(y_batch_train, predictions)
 
-        train_acc = train_acc_fn.result().numpy()
+#         train_acc = train_acc_fn.result().numpy()
 
-        # validating
-        val_preds = model.predict(val_x)
-        val_acc_fn(val_y, val_preds)
-        val_loss = val_loss_fn(val_y, val_preds).numpy()
+#         # validating
+#         val_preds = model.predict(val_x)
+#         val_acc_fn(val_y, val_preds)
+#         val_loss = val_loss_fn(val_y, val_preds).numpy()
 
-        # appending training loss and acc
-        training_acc.append(train_acc)
-        training_loss.append(epoch_loss.numpy())
-        # appending validation loss and acc
-        validation_acc.append(val_acc_fn.result().numpy())
-        validation_loss.append(val_loss)
+#         # appending training loss and acc
+#         training_acc.append(train_acc)
+#         training_loss.append(epoch_loss.numpy())
+#         # appending validation loss and acc
+#         validation_acc.append(val_acc_fn.result().numpy())
+#         validation_loss.append(val_loss)
 
-        print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, epoch_loss, val_acc_fn.result().numpy(), val_loss, time.time()-start_time))
+#         print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, epoch_loss, val_acc_fn.result().numpy(), val_loss, time.time()-start_time))
 
-        start_time = time.time()
-        train_acc_fn.reset_states()
-        val_acc_fn.reset_states()
-    return training_loss, validation_loss, training_acc, validation_acc
+#         start_time = time.time()
+#         train_acc_fn.reset_states()
+#         val_acc_fn.reset_states()
+#     return training_loss, validation_loss, training_acc, validation_acc
 
 
-# Fitting all the models
-modelosses = []
-modeleval_losses = []
-modelacc = []
-modeleval_acc = []
-for m in range(len(modellist)):
-    print("*"*10,"Model",m+1,"*"*10)
-    tl, vl, ta, va = training(modellist[m])
-    modelosses.append(tl)
-    modeleval_losses.append(vl)
-    modelacc.append(ta)
-    modeleval_acc.append(va)
+# # Fitting all the models
+# modelosses = []
+# modeleval_losses = []
+# modelacc = []
+# modeleval_acc = []
+# for m in range(len(modellist)):
+#     print("*"*10,"Model",m+1,"*"*10)
+#     tl, vl, ta, va = training(modellist[m])
+#     modelosses.append(tl)
+#     modeleval_losses.append(vl)
+#     modelacc.append(ta)
+#     modeleval_acc.append(va)
 
-modelosses = np.array(modelosses)
-modeleval_losses = np.array(modeleval_losses)
-modelacc = np.array(modelacc)
-modeleval_acc = np.array(modeleval_acc)
-# losses , eval_losses, accuracy, eval_accuracy
-history = np.array([modelosses, modeleval_losses, modelacc, modeleval_acc])
+# modelosses = np.array(modelosses)
+# modeleval_losses = np.array(modeleval_losses)
+# modelacc = np.array(modelacc)
+# modeleval_acc = np.array(modeleval_acc)
+# # losses , eval_losses, accuracy, eval_accuracy
+# history = np.array([modelosses, modeleval_losses, modelacc, modeleval_acc])
 
-print("-"*100)
+# print("-"*100)
 
-# Model predictions
-modelpreds = []
-for m in range(len(modellist)):
-    print("*"*10, "Model", m+1, "*"*10)
-    modelpreds.append(modellist[m].predict(test_x, verbose=1))
+# # Model predictions
+# modelpreds = []
+# for m in range(len(modellist)):
+#     print("*"*10, "Model", m+1, "*"*10)
+#     modelpreds.append(modellist[m].predict(test_x, verbose=1))
 
-print("-"*100)
+# print("-"*100)
 
-# Generating the metrics
-results = []
-cnn_actual_value=np.argmax(test_y,axis=1)
-for p in range(len(modelpreds)):
-    print("*"*10,"Model",p+1,"*"*10)
-    results.append(showResults(cnn_actual_value, np.argmax(modelpreds[p], axis=1),'CNN'+str(p)))
+# # Generating the metrics
+# results = []
+# cnn_actual_value=np.argmax(test_y,axis=1)
+# for p in range(len(modelpreds)):
+#     print("*"*10,"Model",p+1,"*"*10)
+#     results.append(showResults(cnn_actual_value, np.argmax(modelpreds[p], axis=1),'CNN'+str(p)))
 
-print("-"*100)
+# print("-"*100)
 
-# Generating the confusion metrices
+# # Generating the confusion metrices
 
-cms = []
-for p in modelpreds:
-    cms.append(confusion_matrix(cnn_actual_value, np.argmax(p, axis=1), normalize='true'))
+# cms = []
+# for p in modelpreds:
+#     cms.append(confusion_matrix(cnn_actual_value, np.argmax(p, axis=1), normalize='true'))
 
-# Saving the data
+# # Saving the data
 new_path = path+"eval_data_10k/lstm_pl_eg/"
 
-modelpreds = np.array(modelpreds)
-results = np.array(results)
-cms = np.array(cms)
+# modelpreds = np.array(modelpreds)
+# results = np.array(results)
+# cms = np.array(cms)
 # modelhistory = np.array(modelhistory)
+modelpreds = np.array([1])
+results = np.array([1])
+cms = np.array([1])
+history = np.array([1])
 np.save(new_path+"cnn_modelpreds.npy", modelpreds)
 np.save(new_path+"cnn_results.npy", results)
 np.save(new_path+"cnn_cms.npy", cms)
 np.save(new_path+"cnn_history.npy", history)
+
+sm_path = "./saved_models/cnn_pl_eg/"
+for m in range(len(modellist)):
+    print("*"*10,"Model", m+1, "*"*10)
+    modellist[m].save(sm_path+"Model"+str(m)+".h5")
 
 print("Done!")
