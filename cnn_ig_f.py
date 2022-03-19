@@ -131,7 +131,7 @@ def getCNNModel(i1, i2):
 # @tf.function
 def train_step(model_m, inputs, labels):
     with tf.GradientTape() as tape:
-        tape.watch(tf.convert_to_tensor(inputs))
+        tape.watch(inputs)
         predictions = model_m(inputs, training=True)
         pred_loss = loss_fn(labels, predictions)
         total_loss = pred_loss
@@ -140,7 +140,7 @@ def train_step(model_m, inputs, labels):
             regularization_loss = tf.math.add_n(model_m.losses)
             total_loss = total_loss + regularization_loss
         ig =  IntegratedGradients(model=model_m)
-        exp = ig.explain(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
+        exp = ig.explain(X=inputs.numpy(),baselines=None,target=np.argmax(predictions,axis=1))
         attributions = tf.conver_to_tensor(exp.attributions[0])        
         
         # attributions = eager_ops.expected_gradients(inputs, labels, model_m)
