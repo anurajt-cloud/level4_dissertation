@@ -122,56 +122,56 @@ def train_step(model_m, inputs, labels):
 
 # function to train a model
 def training(model, train_x, train_y, bs):
-    # training_acc = []
-    # training_loss = []
-    # validation_acc = []
-    # validation_loss = []
+    training_acc = []
+    training_loss = []
+    validation_acc = []
+    validation_loss = []
 
-    train_x_batches = tf.data.Dataset.from_tensor_slices((train_x, train_y)).batch(bs)
+
 
     start_time = time.time()
     for epoch in range(num_epochs):
-        # indices = np.random.permutation(len(train_x))
-        # # train validaion split
-        # train_indices, val_indices = train_test_split(indices, test_size=0.1, stratify=train_y[indices])
-        # # extracting the training set
-        # new_train_x = train_x[train_indices]
-        # new_train_y = train_y[train_indices]
-        # # generating indices for training batches
-        # new_indices = np.random.permutation(len(new_train_x))
-        # # extracting the validation set
-        # val_x = train_x[val_indices]
-        # val_y = train_y[val_indices]
-        # print("in training")
-        # e_loss = tf.constant([0], dtype=tf.float32)
-        for i,(batch_x, batch_y) in enumerate(train_x_batches):
-            # x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
-            # y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
+        indices = np.random.permutation(len(train_x))
+        # train validaion split
+        train_indices, val_indices = train_test_split(indices, test_size=0.1, stratify=train_y[indices])
+        # extracting the training set
+        new_train_x = train_x[train_indices]
+        new_train_y = train_y[train_indices]
+        # generating indices for training batches
+        new_indices = np.random.permutation(len(new_train_x))
+        # extracting the validation set
+        val_x = train_x[val_indices]
+        val_y = train_y[val_indices]
+        print("in training")
+        e_loss = np.array([])
+        for i in range(0, len(new_train_x), batch_size):
+            x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
+            y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
 
-            predictions,batch_loss = train_step(model, batch_x, batch_y)
-            # e_loss = tf.concat([e_loss, epoch_loss], axis=0)
-            train_acc_fn(batch_y, predictions)
-            print(i, batch_loss)
+            predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
+            e_loss = np.append(e_loss, epoch_loss.numpy())
+            train_acc_fn(y_batch_train, predictions)
+            print(i)
         train_acc = train_acc_fn.result().numpy()
 
         # validating
-        # val_preds = model.predict(val_x)
-        # val_acc_fn(val_y, val_preds)
-        # val_loss = val_loss_fn(val_y, val_preds).numpy()
+        val_preds = model.predict(val_x)
+        val_acc_fn(val_y, val_preds)
+        val_loss = val_loss_fn(val_y, val_preds).numpy()
 
-        # # appending training loss and acc
-        # training_acc.append(train_acc)
-        # training_loss.append(e_loss.mean())
-        # # appending validation loss and acc
-        # validation_acc.append(val_acc_fn.result().numpy())
-        # validation_loss.append(val_loss)
+        # appending training loss and acc
+        training_acc.append(train_acc)
+        training_loss.append(e_loss.mean())
+        # appending validation loss and acc
+        validation_acc.append(val_acc_fn.result().numpy())
+        validation_loss.append(val_loss)
 
-        print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, 0, val_acc_fn.result().numpy(), 0, time.time()-start_time))
+        print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, e_loss.mean(), val_acc_fn.result().numpy(), val_loss, time.time()-start_time))
 
         start_time = time.time()
         train_acc_fn.reset_states()
         val_acc_fn.reset_states()
-    # return training_loss, validation_loss, training_acc, validation_acc
+    return training_loss, validation_loss, training_acc, validation_acc
 
 kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=1)
 k = 1
@@ -252,11 +252,11 @@ for train_ix, test_ix in kfold.split(X, y):
 
     history = np.array([tl, vl, ta, va])
 
-    preds = np.argmax(model.predict(test_x, verbose=1),axis=1)
+    preds = model.predict(test_x, verbose=1)
     
     results = showResults(test_y, preds, "Model_cv"+str(k))
 
-    cms = confusion_matrix(test_y, preds, normalize='true')
+    cms = confusion_matrix(test_y,np.argmax(preds,axis=1), normalize='true')
     
     new_path = './eval_data_10k/lstm_ph_eg/'
 

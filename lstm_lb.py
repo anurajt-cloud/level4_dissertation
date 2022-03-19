@@ -166,11 +166,11 @@ for train_ix, test_ix in kfold.split(X, y):
 
     history = np.array([tl, vl, ta, va])
 
-    preds = np.argmax(model.predict(test_x, verbose=1),axis=1)
+    preds = model.predict(test_x, verbose=1)
     
     results = showResults(test_y, preds, "Model_cv"+str(k))
 
-    cms = confusion_matrix(test_y, preds, normalize='true')
+    cms = confusion_matrix(test_y, np.argmax(preds,axis=1), normalize='true')
     
     new_path = './eval_data_10k/cnn_pl/'
 

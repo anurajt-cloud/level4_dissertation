@@ -259,13 +259,13 @@ history = np.array([modelosses, modeleval_losses, modelacc, modeleval_acc])
 modelpreds = []
 for m in range(len(modellist)):
     print("*"*10, "Model", m+1, "*"*10)
-    modelpreds.append(np.argmax(modellist[m].predict(test_x, verbose=1),axis=1))
+    modelpreds.append(modellist[m].predict(test_x, verbose=1))
 
 results = []
 cnn_actual_value=np.argmax(test_y,axis=1)
 for p in range(len(modelpreds)):
     print("*"*10,"Model",p+1,"*"*10)
-    results.append(showResults(cnn_actual_value, modelpreds[p],'CNN'+str(p)))
+    results.append(showResults(cnn_actual_value,np.argmax( modelpreds[p],axis=1),'CNN'+str(p)))
 
 cms = []
 for p in modelpreds:
