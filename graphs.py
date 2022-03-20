@@ -36,4 +36,4 @@ def eg_att(foldername, tname):
         m = tf.keras.models.load_model(path+foldername+"/Model0.h5")
         return cal_eg(m, dx, dy)
 
-print(len(eg_att("cnn_pl", "ph")))
+print(eg_att("cnn_pl", "pl").shape)
