@@ -22,13 +22,13 @@ def eg_att(foldername, tname):
     if tname=="ph":
         test_y = np.load("./eval_data_10k/teset_y.npy", allow_pickle=True)
         test_x = np.load("./eval_data_10k/teset_x.npy", allow_pickle=True)
-        attributions = []
+        # attributions = []
         for i in range(1,11):
             m = tf.keras.models.load_model(path+foldername+"/Model_cv"+str(i)+".h5")
             dx = test_x[i-1].reshape(-1, test_x[i-1].shape[1], 1).astype(np.float32)
             dy = tf.keras.utils.to_categorical(test_y[i-1].astype(np.float32))
-            attributions.append(cal_eg(m, dx, dy))
-        return attributions
+            np.save("./eg_attributions/"+foldername+"/att"+str(i),cal_eg(m, dx, dy))
+        print(foldername, "saved!")
     elif tname=="pl":
         test_c0 = np.genfromtxt('./Data/test_patients_fc.csv', delimiter=',')
         test_c1 = np.genfromtxt('./Data/test_patients_sc.csv', delimiter=',')
@@ -41,6 +41,8 @@ def eg_att(foldername, tname):
 
 print("Generating Attributions")
 np.save("./eg_attributions/cnn_pl_eg", eg_att("cnn_pl_eg", "pl"))
+print("cnn_pl_eg saved!")
 np.save("./eg_attributions/lstm_pl_eg", eg_att("lstm_pl_eg", "pl"))
-
-np.save("./eg_attributions/cnn_ph_eg", eg_att("cnn_ph_eg", "ph"), allow_pickle=True)
+print("lstm_pl_eg saved!")
+eg_att("cnn_ph_eg", "ph")
+# np.save("./eg_attributions/cnn_ph_eg", eg_att("cnn_ph_eg", "ph"), allow_pickle=True)
