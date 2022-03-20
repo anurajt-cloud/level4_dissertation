@@ -43,4 +43,4 @@ print("Generating Attributions")
 np.save("./eg_attributions/cnn_pl_eg", eg_att("cnn_pl_eg", "pl"))
 np.save("./eg_attributions/lstm_pl_eg", eg_att("lstm_pl_eg", "pl"))
 
-np.save("./eg_attributions/cnn_ph_eg", eg_att("cnn_ph_eg", "ph"))
+np.save("./eg_attributions/cnn_ph_eg", eg_att("cnn_ph_eg", "ph"), allow_pickle=True)
