@@ -1,19 +1,12 @@
-#-------------------------------------
-# ECG Beat classification:
-# Model - CNN
-
-# Data Method - Patient leave-out
-
-#-------------------------------------
-
 # Imports
+from unittest import result
 import numpy as np
 import glob
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import *
 import os
-import seaborn as sns
+#import seaborn as sns
 from sklearn import *
 from sklearn.metrics import *
 import tensorflow as tf
@@ -23,34 +16,25 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Conv1D
-from tensorflow.keras.layers import MaxPooling1D, LeakyReLU
-from sklearn.utils import shuffle
-from tensorflow import keras
-from tensorflow.keras.layers import Lambda
-from tensorflow.keras.layers import Add
-from tensorflow.keras.layers import Activation
-import itertools
-import time
-from sklearn.utils import resample
-from tensorflow.keras.callbacks import ReduceLROnPlateau
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import MaxPooling1D
 import ECG.eager_ops
 from ECG import eager_ops
 from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.metrics import CategoricalAccuracy
 from sklearn.model_selection import train_test_split
+import time
 
 
-print("You are using Tensorflow version", tf.__version__)
+# print("You are using Tensorflow version", tf.__version__)
 
-print(tf.config.list_physical_devices('GPU'))
+# print(tf.config.list_physical_devices('GPU'))
 
 path = './'
 
 print("-"*100)
 
-# Loading Data
+# Loading data
 train_c1 = np.genfromtxt(path+'Data/train_patients_sc.csv', delimiter=',')
 train_c0 = np.genfromtxt(path+'Data/train_patients_fc.csv', delimiter=',')
 test_c1 = np.genfromtxt(path+'Data/test_patients_sc.csv', delimiter=',')
@@ -75,6 +59,8 @@ print("x:", test_x.shape, "y:", test_y.shape)
 
 print("-"*100)
 
+
+# Creating a performance metrics function
 def showResults(test, pred, model_name):
     accuracy = accuracy_score(test, pred)
     precision= precision_score(test, pred, average='macro')
@@ -90,65 +76,37 @@ def showResults(test, pred, model_name):
     return (model_name, round(accuracy,3), round(precision,3) , round(recall,3) , round(f1score_macro,3), 
             round(f1score_micro, 3), cm)
 
-opt = Adam(learning_rate=0.001)
-
-def getCNNModel():
+# Function for building the LSTM model
+def getlstmModel():
     
-    input = keras.layers.Input(shape=(train_x.shape[1],train_x.shape[2]))
-    x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, kernel_initializer='VarianceScaling')(input)
-    x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.LeakyReLU(alpha=0.3)(x)
+    lstmmodel = Sequential()
+    lstmmodel.add(LSTM(128, return_sequences=True, input_shape=(train_x.shape[1],train_x.shape[2])))
+    lstmmodel.add(LSTM(9, return_sequences=True))
+    lstmmodel.add(MaxPooling1D(pool_size=4,padding='same'))
+    lstmmodel.add(Flatten())
+    lstmmodel.add(Dense(256, activation=tf.nn.relu))    
+    lstmmodel.add(Dense(128, activation=tf.nn.relu))    
+    lstmmodel.add(Dense(32, activation=tf.nn.relu))
+    lstmmodel.add(Dense(9, activation='softmax'))
+    lstmmodel.compile(optimizer='adam', loss='categorical_crossentropy',metrics=['accuracy'])
+    # lstmmodel.summary()
+    return lstmmodel
 
-    #block 2
+# List of models
+lstm1 = getlstmModel()
+# lstm2 = getlstmModel()
+# lstm3 = getlstmModel()
+# lstm4 = getlstmModel()
+# lstm5 = getlstmModel()
+# lstm6 = getlstmModel()
+# lstm7 = getlstmModel()
+# lstm8 = getlstmModel()
+# lstm9 = getlstmModel()
+# lstm10 = getlstmModel()
 
-    x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, kernel_initializer='VarianceScaling')(x)
-    x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.LeakyReLU(alpha=0.3)(x)
-    x = keras.layers.Dropout(0.2)(x)
+modellist = [lstm1]#,lstm2,lstm3,lstm4,lstm5,lstm6,lstm7,lstm8,lstm9,lstm10]
 
-    #block 3
-    for i in range(4):
-
-
-        shortcut = MaxPooling1D(pool_size=1)(x)
-
-        filters = 64 * ((i//2)+1)
-        # print("Filter size = "+str(filters))
-        x = keras.layers.Conv1D(kernel_size=16, filters=filters, strides=1, use_bias=True, padding="same", kernel_initializer='VarianceScaling')(x)
-        x = keras.layers.BatchNormalization()(x)
-        x = keras.layers.LeakyReLU(alpha=0.3)(x)
-
-        x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, padding="same", kernel_initializer='VarianceScaling')(x)
-
-        x = keras.layers.LeakyReLU(alpha=0.3)(x)
-        x = keras.layers.Dropout(0.2)(x)
-    
-
-        x = tf.keras.layers.Add()([x, shortcut])
-
-
-    x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, kernel_initializer='VarianceScaling')(x)
-    x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.LeakyReLU(alpha=0.3)(x)
-    x = keras.layers.Flatten()(x)
-    out = keras.layers.Dense(9, activation='softmax')(x)
-    model = tf.keras.models.Model(inputs=[input], outputs=out)
-    model.compile(loss='categorical_crossentropy',optimizer=opt,metrics=['accuracy'])
-    return model
-
-cnn1 = getCNNModel()
-# cnn2 = getCNNModel()
-# cnn3 = getCNNModel()
-# cnn4 = getCNNModel()
-# cnn5 = getCNNModel()
-# cnn6 = getCNNModel()
-# cnn7 = getCNNModel()
-# cnn8 = getCNNModel()
-# cnn9 = getCNNModel()
-# cnn10 = getCNNModel()
-
-modellist = [cnn1]#, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
-
+# Defining training functions and parameters
 lamb = 0.0001
 num_epochs = 10
 batch_size = 50
@@ -197,7 +155,7 @@ def training(model):
     for epoch in range(num_epochs):
         indices = np.random.permutation(len(train_x))
         # train validaion split
-        train_indices, val_indices = train_test_split(indices, test_size=0.1, stratify=train_y[indices])
+        train_indices, val_indices = train_test_split(indices, test_size=0.2, stratify=train_y[indices])
         # extracting the training set
         new_train_x = train_x[train_indices]
         new_train_y = train_y[train_indices]
@@ -213,7 +171,7 @@ def training(model):
             y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
 
             predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
-
+            print(i)
             train_acc_fn(y_batch_train, predictions)
 
         train_acc = train_acc_fn.result().numpy()
@@ -237,6 +195,8 @@ def training(model):
         val_acc_fn.reset_states()
     return training_loss, validation_loss, training_acc, validation_acc
 
+
+# Fitting all the models
 modelosses = []
 modeleval_losses = []
 modelacc = []
@@ -256,35 +216,46 @@ modeleval_acc = np.array(modeleval_acc)
 # losses , eval_losses, accuracy, eval_accuracy
 history = np.array([modelosses, modeleval_losses, modelacc, modeleval_acc])
 
+print("-"*100)
+
+# Model predictions
 modelpreds = []
 for m in range(len(modellist)):
     print("*"*10, "Model", m+1, "*"*10)
     modelpreds.append(modellist[m].predict(test_x, verbose=1))
 
+print("-"*100)
+
+# Generating the metrics
 results = []
 cnn_actual_value=np.argmax(test_y,axis=1)
 for p in range(len(modelpreds)):
     print("*"*10,"Model",p+1,"*"*10)
-    results.append(showResults(cnn_actual_value,np.argmax( modelpreds[p],axis=1),'CNN'+str(p)))
+    results.append(showResults(cnn_actual_value, np.argmax(modelpreds[p], axis=1),'CNN'+str(p)))
+
+print("-"*100)
+
+# Generating the confusion metrices
 
 cms = []
 for p in modelpreds:
-    cms.append(confusion_matrix(cnn_actual_value, np.argmax(p,axis=1), normalize='true'))
+    cms.append(confusion_matrix(cnn_actual_value, np.argmax(p, axis=1), normalize='true'))
 
-# Saving data LSTM patient leavout
-new_path = path+"eval_data_10k/cnn_pl_eg/"
+# Saving the data
+new_path = path+"eval_data_10k/lstm_pl_eg/"
 
 modelpreds = np.array(modelpreds)
 results = np.array(results)
 cms = np.array(cms)
-# modelhistory = np.array(modelhistory)
-np.save(new_path+"cnn_modelpreds.npy", modelpreds)
-np.save(new_path+"cnn_results.npy", results)
-np.save(new_path+"cnn_cms.npy", cms)
-np.save(new_path+"cnn_history.npy", history)
+# modelhistory = np.array(history)
 
-# Saving the models
-sm_path = "./saved_models/cnn_pl_eg/"
+np.save(new_path+"lstm_modelpreds.npy", modelpreds)
+np.save(new_path+"lstm_results.npy", results)
+np.save(new_path+"lstm_cms.npy", cms)
+np.save(new_path+"lstm_history.npy", history)
+
 for m in range(len(modellist)):
     print("*"*10,"Model", m+1, "*"*10)
-    modellist[m].save(sm_path+"Model"+str(m)+".h5")
+    modellist[m].save(new_path+"Model"+str(m)+".h5")
+
+print("Done!")

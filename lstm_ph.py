@@ -172,7 +172,7 @@ for train_ix, test_ix in kfold.split(X, y):
 
     cms = confusion_matrix(test_y, np.argmax(preds,axis=1), normalize='true')
     
-    new_path = './eval_data_10k/lstm_pl/'
+    new_path = './eval_data_10k/lstm_ph/'
 
     model.save(new_path+'Model_cv'+str(k)+'.h5')
     np.save(new_path+"preds_cv"+str(k)+'.npy', preds)
