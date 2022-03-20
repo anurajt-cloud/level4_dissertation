@@ -10,9 +10,12 @@ path = "./eval_data_10k/"
 def cal_eg(m, dx, dy): 
   test_d = tf.data.Dataset.from_tensor_slices((dx,dy))
   test_d = test_d.batch(200)
-  att = []
+  att = None
   for i, (x_batch, y_batch) in enumerate(test_d):
-    att.append(eg(inputs=x_batch, labels=y_batch, model=m))
+    if i==0:
+        att = eg(inputs=x_batch, labels=y_batch, model=m)
+    else:
+        att = np.append(att,eg(inputs=x_batch, labels=y_batch, model=m),axis=0)
   return att
 
 def eg_att(foldername, tname):
@@ -36,4 +39,8 @@ def eg_att(foldername, tname):
         m = tf.keras.models.load_model(path+foldername+"/Model0.h5")
         return cal_eg(m, dx, dy)
 
-print(eg_att("cnn_pl", "pl")[-3].shape)
+print("Generating Attributions")
+np.save("./eg_attributions/cnn_pl_eg", eg_att("cnn_pl_eg", "pl"))
+np.save("./eg_attributions/lstm_pl_eg", eg_att("lstm_pl_eg", "pl"))
+
+np.save("./eg_attributions/cnn_ph_eg", eg_att("cnn_ph_eg", "ph"))
