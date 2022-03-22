@@ -39,7 +39,8 @@ def ig_att(foldername, tname):
         dx = test_x_c01.reshape(-1, test_x_c01.shape[1], 1).astype('float32')
         dy = tf.keras.utils.to_categorical(test_y_c01[:,0])
         m = tf.keras.models.load_model(path+foldername+"/Model0.h5")
-        return cal_eg(m, dx, dy)
+        # return cal_eg(m, dx, dy)
+        cal_ig(m, dx, dy)
 
 print("Generating Attributions")
 #Done np.save("./eg_attributions/cnn_pl_eg", eg_att("cnn_pl_eg", "pl"))
@@ -51,4 +52,4 @@ print("Generating Attributions")
 # eg_att("lstm_ph_eg", "ph")
 # print("lstm_ph_eg saved!")
 
-ig_att("cnn_pl_eg", "pl")
+ig_att("cnn_pl", "pl")
