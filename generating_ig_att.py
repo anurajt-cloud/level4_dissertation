@@ -14,7 +14,7 @@ def cal_ig(m, dx, dy):
     if i==0:
         att = calculate_ig(model=m, beats=x_batch, class_indexes=y_batch)
     else:
-        att = np.append(att,calculate_ig(model=m, beats=x_batch, class_indexes=tf.reduce_max(y_batch, axis=1)),axis=0)
+        att = np.append(att,calculate_ig(model=m, beats=x_batch, class_indexes=y_batch),axis=0)
     print(att.shape)
         # att = np.append(att,eg(inputs=x_batch, labels=y_batch, model=m),axis=0)
 #   return att
