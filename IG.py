@@ -68,7 +68,9 @@ def calculate_ig(model, beats, class_indexes):
     # alphas = tf.cast(tf.linspace(0.0, 1.0, 51), tf.float32)
     # signals = interpolate_signal(baseline, signal, alphas)
     
-    print(class_indexes)
+    for b,c in zip(beats, class_indexes):
+        print(c)
+    
     # igs = np.array([integrated_gradients(model, baseline, b, c, 50, 32) for b,c in zip(beats,class_indexes)])
     # print(igs.shape)
     # return igs
