@@ -206,8 +206,8 @@ def training(model):
         for i in range(0, len(new_train_x), batch_size):
             x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
             y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
-            ts = tf.function(train_step)
-            predictions,epoch_loss = ts(model, x_batch_train, y_batch_train)
+            # ts = tf.function(train_step)
+            predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
             print(i)
             train_acc_fn(y_batch_train, predictions)
 
