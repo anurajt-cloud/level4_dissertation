@@ -58,7 +58,7 @@ def integrated_gradients(model, baseline, signal, target_class_idx, m_steps=50, 
     
 
 def calculate_ig(model, beats, class_indexes):
-    
+    print("calig", class_indexes.shape)
     #converting beats & class_indexes into float32
     # beats = tf.cast(beats, tf.float32)
     class_indexes = tf.cast(class_indexes, tf.int64)
