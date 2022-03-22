@@ -167,7 +167,7 @@ def train_step(model_m, inputs, labels):
         # e = tf.py_function(ig.explain, inp=[inputs, labels], Tout=)
         # exp = e(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
         attributions = cal_expected_gradiants(model_m, inputs, tf.reduce_max(labels,axis=1)) #exp.attributions[0]
-        
+        print(attributions.shape)
         summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
 
         normalized_attributions = tf.image.per_image_standardization(summed_attributions)
