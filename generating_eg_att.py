@@ -40,11 +40,12 @@ def eg_att(foldername, tname):
         return cal_eg(m, dx, dy)
 
 print("Generating Attributions")
-#Done np.save("./eg_attributions/cnn_pl_eg", eg_att("cnn_pl_eg", "pl"))
+# np.save("./eg_attributions/cnn_pl_eg", eg_att("cnn_pl_eg", "pl")) DONE!
 # print("cnn_pl_eg saved!")
-#Done np.save("./eg_attributions/lstm_pl_eg", eg_att("lstm_pl_eg", "pl"))
+
+# np.save("./eg_attributions/lstm_pl_eg", eg_att("lstm_pl_eg", "pl")) DONE!
 # print("lstm_pl_eg saved!")
-#Done eg_att("cnn_ph_eg", "ph")
-# print("cnn_ph_eg saved!")
-eg_att("lstm_ph_eg", "ph")
-print("lstm_ph_eg saved!")
+
+# eg_att("cnn_ph_eg", "ph") DONE!
+
+# eg_att("lstm_ph_eg", "ph") DONE!
