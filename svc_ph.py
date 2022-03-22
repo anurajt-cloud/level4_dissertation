@@ -108,10 +108,10 @@ for train_ix, test_ix in kfold.split(X, y):
     print(train_x_sampled.shape,train_y_sampled.shape)
 
     model = SVC()
-    model.fit(train_y_sampled, train_x_sampled, verbose=1)
-    preds = model.predict(test_x, verbose=1)
+    model.fit(train_y_sampled, train_x_sampled)
+    preds = model.predict(test_x)
     print(preds)
-    
+
     # history = np.array([tl, vl, ta, va])
 
     # preds = model.predict(test_x, verbose=1)
