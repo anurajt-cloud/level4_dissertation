@@ -27,7 +27,7 @@ def ig_att(foldername, tname):
         for i in range(1,11):
             m = tf.keras.models.load_model(path+foldername+"/Model_cv"+str(i)+".h5")
             dx = test_x[i-1].reshape(-1, test_x[i-1].shape[1], 1).astype(np.float32)
-            dy = tf.keras.utils.to_categorical(test_y[i-1].astype(np.float32))
+            dy = test_y[i-1].astype(np.float32)
             np.save("./ig_attributions/"+foldername+"/att"+str(i),cal_ig(m, dx, dy))
             # cal_ig(m, dx, dy)
         print(foldername, "saved!")
