@@ -108,8 +108,8 @@ for train_ix, test_ix in kfold.split(X, y):
     train_y_sampled = np.concatenate(train_r_y)
     print(train_x_sampled.shape,train_y_sampled.shape)
 
-    train_x_sampled = train_x_sampled.reshape(-1, train_x_sampled.shape[1], 1).astype('float32')
-    test_x = test_x.reshape(-1, test_x.shape[1], 1).astype('float32')
+    # train_x_sampled = train_x_sampled.reshape(-1, train_x_sampled.shape[1], 1).astype('float32')
+    # test_x = test_x.reshape(-1, test_x.shape[1], 1).astype('float32')
     print(train_x_sampled.shape[1], test_x.shape[2])
     train_y_sampled = tf.keras.utils.to_categorical(train_y_sampled)
 
