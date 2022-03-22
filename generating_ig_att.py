@@ -3,7 +3,7 @@ import os
 from IG import *
 import tensorflow as tf
 import matplotlib.pyplot as plt
-
+import time
 path = "./eval_data_10k/"
 
 def cal_ig(m, dx, dy): 
@@ -15,9 +15,9 @@ def cal_ig(m, dx, dy):
             att = calculate_ig(model=m, beats=x_batch, class_indexes=y_batch)
         else:
             att = np.append(att,calculate_ig(model=m, beats=x_batch, class_indexes=y_batch),axis=0)
-        print(att.shape)
+        # print(att.shape)
         # att = np.append(att,eg(inputs=x_batch, labels=y_batch, model=m),axis=0)
-#   return att
+    return att
 
 def ig_att(foldername, tname):
     if tname=="ph":
@@ -40,7 +40,8 @@ def ig_att(foldername, tname):
         dy = test_y_c01[:,0]
         m = tf.keras.models.load_model(path+foldername+"/Model0.h5")
         # return cal_eg(m, dx, dy)
-        cal_ig(m, dx, dy)
+        s = time.time()
+        print(cal_ig(m, dx, dy).shape, time.time()-s)
 
 
 print("Generating Attributions")
