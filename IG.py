@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+import numpy as np
 
 
 def interpolate_signal(baseline, signal, alphas):
@@ -57,7 +57,7 @@ def integrated_gradients(model, baseline, signal, target_class_idx, m_steps=50, 
     return integrated_gradients #attribution_mask
     
 
-def cal_expected_gradiants(model, beats, class_indexes):
+def calculate_ig(model, beats, class_indexes):
     
     #converting beats & class_indexes into float32
     # beats = tf.cast(beats, tf.float32)
@@ -69,7 +69,7 @@ def cal_expected_gradiants(model, beats, class_indexes):
     # signals = interpolate_signal(baseline, signal, alphas)
     
     
-    igs = tf.convert_to_tensor([integrated_gradients(model, baseline, b, c, 50, 32) for b,c in zip(beats,class_indexes)])
+    igs = np.array([integrated_gradients(model, baseline, b, c, 50, 32) for b,c in zip(beats,class_indexes)])
     # print(igs.shape)
     return igs
     
