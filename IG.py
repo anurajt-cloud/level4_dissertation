@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-
+@tf.function
 def interpolate_signal(baseline, signal, alphas):
     alphas_x = alphas[:, tf.newaxis, tf.newaxis]
     baseline_x = tf.expand_dims(baseline, axis=0)
@@ -9,19 +9,19 @@ def interpolate_signal(baseline, signal, alphas):
     delta = input_x - baseline_x
     signals = baseline_x + alphas_x * delta
     return signals
-
+@tf.function
 def compute_gradients(model, signals, target_class_idx):
     with tf.GradientTape() as tape:
         tape.watch(signals)
         logits = model(signals)
         probs = tf.nn.softmax(logits, axis=-1)[:,target_class_idx]
     return tape.gradient(probs, signals)
-
+@tf.function
 def integral_approximation(gradients):
     grads = (gradients[:-1] + gradients[1:]) / tf.constant(2.0)
     integrated_gradients = tf.math.reduce_mean(grads, axis=0)
     return integrated_gradients
-
+@tf.function
 def integrated_gradients(model, baseline, signal, target_class_idx, m_steps=50, batch_size=32):
     # 1. generate alphas
     alphas = tf.cast(tf.linspace(0.0, 1.0, m_steps+1), tf.float32)
