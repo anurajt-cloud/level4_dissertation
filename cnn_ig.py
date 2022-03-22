@@ -143,7 +143,7 @@ print("Models defined")
 
 lamb = 0.0001
 num_epochs = 10
-batch_size = 50
+batch_size = 25
 optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
 loss_fn = tf.keras.losses.CategoricalCrossentropy()
 val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
