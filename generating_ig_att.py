@@ -28,8 +28,8 @@ def ig_att(foldername, tname):
             m = tf.keras.models.load_model(path+foldername+"/Model_cv"+str(i)+".h5")
             dx = test_x[i-1].reshape(-1, test_x[i-1].shape[1], 1).astype(np.float32)
             dy = tf.keras.utils.to_categorical(test_y[i-1].astype(np.float32))
-            # np.save("./eg_attributions/"+foldername+"/att"+str(i),cal_ig(m, dx, dy))
-            cal_ig(m, dx, dy)
+            np.save("./ig_attributions/"+foldername+"/att"+str(i),cal_ig(m, dx, dy))
+            # cal_ig(m, dx, dy)
         print(foldername, "saved!")
     elif tname=="pl":
         test_c0 = np.genfromtxt('./Data/test_patients_fc.csv', delimiter=',')
@@ -45,16 +45,11 @@ def ig_att(foldername, tname):
 
 
 print("Generating Attributions")
-#Done np.save("./eg_attributions/cnn_pl_eg", eg_att("cnn_pl_eg", "pl"))
-# print("cnn_pl_eg saved!")
-#Done np.save("./eg_attributions/lstm_pl_eg", eg_att("lstm_pl_eg", "pl"))
-# print("lstm_pl_eg saved!")
-#Done eg_att("cnn_ph_eg", "ph")
-# print("cnn_ph_eg saved!")
-# eg_att("lstm_ph_eg", "ph")
-# print("lstm_ph_eg saved!")
-
-# np.save("./ig_attributions/cnn_pl", ig_att("cnn_pl", "pl"))
+# np.save("./ig_attributions/cnn_pl", ig_att("cnn_pl", "pl")) DONE!
 # print("cnn_pl saved!")
-np.save("./ig_attributions/lstm_pl", ig_att("lstm_pl", "pl"))
-print("lstm_pl saved!")
+# np.save("./ig_attributions/lstm_pl", ig_att("lstm_pl", "pl")) DONE!
+# print("lstm_pl saved!")
+ig_att("cnn_ph", "ph")
+# print("cnn_ph_eg saved!")
+ig_att("lstm_ph", "ph")
+# print("lstm_ph_eg saved!")
