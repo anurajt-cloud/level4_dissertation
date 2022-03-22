@@ -143,7 +143,7 @@ print("Models defined")
 
 lamb = 0.0001
 num_epochs = 10
-batch_size = 20
+batch_size = 50
 optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
 loss_fn = tf.keras.losses.CategoricalCrossentropy()
 val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
@@ -167,7 +167,6 @@ def train_step(model_m, inputs, labels):
         # e = tf.py_function(ig.explain, inp=[inputs, labels], Tout=)
         # exp = e(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
         attributions = cal_expected_gradiants(model_m, inputs, tf.reduce_max(labels,axis=1)) #exp.attributions[0]
-        print(attributions.shape)
         summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
 
         normalized_attributions = tf.image.per_image_standardization(summed_attributions)
@@ -279,7 +278,7 @@ np.save(new_path+"cnn_cms.npy", cms)
 np.save(new_path+"cnn_history.npy", history)
 
 # Saving the models
-sm_path = "./saved_models/cnn_pl_ig/"
+# sm_path = "./saved_models/cnn_pl_ig/"
 for m in range(len(modellist)):
     print("*"*10,"Model", m+1, "*"*10)
-    modellist[m].save(sm_path+"Model"+str(m))
+    modellist[m].save(new_path+"Model"+str(m))
