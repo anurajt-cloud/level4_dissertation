@@ -53,8 +53,8 @@ def integrated_gradients(model, baseline, signal, target_class_idx, m_steps=50, 
     integrated_gradients = (signal - baseline) * avg_gradients
     # integrated_gradients = integrated_gradients*(tf.reduce_max(signal)/tf.reduce_max(integrated_gradients))
     # Converting 2D tensor to 1D vetor.
-    attribution_mask = tf.reduce_sum(tf.math.abs(integrated_gradients), axis=-1)
-    return attribution_mask
+    # attribution_mask = tf.reduce_sum(tf.math.abs(integrated_gradients), axis=-1)
+    return integrated_gradients #attribution_mask
     
 
 def cal_expected_gradiants(model, beats, class_indexes):
