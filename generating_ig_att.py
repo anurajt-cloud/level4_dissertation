@@ -56,3 +56,5 @@ print("Generating Attributions")
 
 np.save("./ig_attributions/cnn_pl", ig_att("cnn_pl", "pl"))
 print("cnn_pl saved!")
+np.save("./ig_attributions/lstm_pl", ig_att("lstm_pl", "pl"))
+print("lstm_pl saved!")
