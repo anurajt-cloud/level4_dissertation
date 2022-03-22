@@ -165,7 +165,7 @@ def train_step(model_m, inputs, labels):
 
         ig = IntegratedGradients(model=model_m)
         e = tf.function(ig.explain)
-        exp = e(X=inputs.numpy(),baselines=None,target=np.argmax(predictions.numpy(),axis=1))
+        exp = e(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
         attributions = exp.attributions[0]
         
         summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
