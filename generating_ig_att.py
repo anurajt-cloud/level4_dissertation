@@ -12,9 +12,9 @@ def cal_ig(m, dx, dy):
   att = None
   for i, (x_batch, y_batch) in enumerate(test_d):
     if i==0:
-        att = calculate_ig(model=m, beats=x_batch, class_indexes=tf.reduce_max(y_batch, axis=1))
+        att = calculate_ig(model=m, beats=x_batch, class_indexes=y_batch)
     else:
-        att = np.append(att,calculate_ig(model=m, beats=x_batch, class_indexes=tf.reduce_max(y_batch, axis=1)),axis=0)
+        att = np.append(att,calculate_ig(model=m, beats=x_batch, class_indexes=y_batch),axis=0)
     # print(att.shape)
         # att = np.append(att,eg(inputs=x_batch, labels=y_batch, model=m),axis=0)
 #   return att
@@ -37,10 +37,10 @@ def ig_att(foldername, tname):
         test_x_c01 = np.concatenate((test_c0[:, :-2], test_c1[:, :-2]), axis=1)
         test_y_c01 = np.concatenate((test_c0[:, -2:], test_c0[:, -2:]), axis=1)
         dx = test_x_c01.reshape(-1, test_x_c01.shape[1], 1).astype('float32')
-        dy = tf.keras.utils.to_categorical(test_y_c01[:,0])
+        dy = test_y_c01[:,0]
         m = tf.keras.models.load_model(path+foldername+"/Model0.h5")
         # return cal_eg(m, dx, dy)
-        print(cal_ig(m, dx, dy).shape)
+        print(dy.shape)
 
 
 print("Generating Attributions")
