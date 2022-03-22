@@ -138,12 +138,12 @@ cnn8 = getCNNModel()
 cnn9 = getCNNModel()
 cnn10 = getCNNModel()
 
-modellist = [cnn1, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
+modellist = [cnn1]#, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
 print("Models defined")
 
 lamb = 0.0001
 num_epochs = 10
-batch_size = 25
+batch_size = 50
 optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
 loss_fn = tf.keras.losses.CategoricalCrossentropy()
 val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
@@ -162,7 +162,8 @@ def train_step(model_m, inputs, labels):
         if len(model_m.losses) > 0:
             regularization_loss = tf.math.add_n(model_m.losses)
             total_loss = total_loss + regularization_loss
-        ig =  IntegratedGradients(model=model_m)
+        g_IG = tf.function(IntegratedGradients)
+        ig =  g_IG(model=model_m)
         exp = ig.explain(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
         attributions = exp.attributions[0]
         
