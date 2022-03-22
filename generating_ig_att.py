@@ -40,7 +40,7 @@ def ig_att(foldername, tname):
         dy = test_y_c01[:,0]
         m = tf.keras.models.load_model(path+foldername+"/Model0.h5")
         # return cal_eg(m, dx, dy)
-        print(dy.shape)
+        print(cal_ig(m, dx, dy))
 
 
 print("Generating Attributions")
