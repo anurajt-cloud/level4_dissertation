@@ -56,7 +56,6 @@ def integrated_gradients(model, baseline, signal, target_class_idx, m_steps=50, 
     # attribution_mask = tf.reduce_sum(tf.math.abs(integrated_gradients), axis=-1)
     return integrated_gradients #attribution_mask
     
-@tf.function
 def calculate_ig(model, beats, class_indexes):
     # print("calig", class_indexes.shape)
     #converting beats & class_indexes into float32
