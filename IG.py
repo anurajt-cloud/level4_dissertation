@@ -36,7 +36,7 @@ def integrated_gradients(model, baseline, signal, target_class_idx, m_steps=50, 
         
         # 2. Generate interpolated signals between baseline and input.
         interpolated_path_input_batch = interpolate_signal(baseline, signal, alpha_batch)
-        
+        print(target_class_idx.shape)
         # 3. Compute gradients between model outputs and interpolated inputs.
         gradient_batch = compute_gradients(model, interpolated_path_input_batch, target_class_idx)
         
