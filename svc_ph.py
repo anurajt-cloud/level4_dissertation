@@ -115,23 +115,17 @@ for train_ix, test_ix in kfold.split(X, y):
 
     model = SVC()
     model.fit(train_x_sampled, train_y_sampled)
+
     preds = model.predict(test_x)
-    print(preds.shape)
-
-    # history = np.array([tl, vl, ta, va])
-
-    # preds = model.predict(test_x, verbose=1)
     
-    # results = showResults(test_y,np.argmax( preds,axis=1), "Model_cv"+str(k))
+    results = showResults(test_y,preds, "Model_cv"+str(k))
 
-    # cms = confusion_matrix(test_y, np.argmax(preds,axis=1), normalize='true')
+    cms = confusion_matrix(test_y, preds, normalize='true')
     
-    # new_path = './eval_data_10k/cnn_ph_eg/'
+    new_path = './eval_data_10k/svc_ph/'
 
-    # model.save(new_path+'Model_cv'+str(k)+'.h5')
-    # np.save(new_path+"preds_cv"+str(k)+'.npy', preds)
-    # np.save(new_path+"results_cv"+str(k)+'.npy', results)
-    # np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
-    # np.save(new_path+"history_cv"+str(k)+'.npy', history)
-    # tf.keras.backend.clear_session()
+    model.save(new_path+'Model_cv'+str(k)+'.h5')
+    np.save(new_path+"preds_cv"+str(k)+'.npy', preds)
+    np.save(new_path+"results_cv"+str(k)+'.npy', results)
+    np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
     k+=1
