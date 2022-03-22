@@ -162,8 +162,8 @@ def train_step(model_m, inputs, labels):
         if len(model_m.losses) > 0:
             regularization_loss = tf.math.add_n(model_m.losses)
             total_loss = total_loss + regularization_loss
-        g_IG = tf.function(IntegratedGradients)
-        ig =  g_IG(model=model_m)
+
+        ig = IntegratedGradients(model=model_m)
         exp = ig.explain(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
         attributions = exp.attributions[0]
         
