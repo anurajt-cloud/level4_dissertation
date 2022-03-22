@@ -32,7 +32,7 @@ from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.metrics import CategoricalAccuracy
 from sklearn.model_selection import train_test_split
 from alibi.explainers import IntegratedGradients
-
+from IG import *
 
 print("You are using Tensorflow version", tf.__version__)
 
@@ -163,10 +163,10 @@ def train_step(model_m, inputs, labels):
             regularization_loss = tf.math.add_n(model_m.losses)
             total_loss = total_loss + regularization_loss
 
-        ig = IntegratedGradients(model=model_m)
-        e = tf.function(ig.explain)
-        exp = e(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
-        attributions = exp.attributions[0]
+        # ig = IntegratedGradients(model=model_m)
+        # e = tf.py_function(ig.explain, inp=[inputs, labels], Tout=)
+        # exp = e(X=inputs,baselines=None,target=np.argmax(predictions,axis=1))
+        attributions = cal_expected_gradiants(model_m, inputs, tf.reduce_max(labels,axis=1)) #exp.attributions[0]
         
         summed_attributions = tf.reduce_sum(attributions, axis=-1, keepdims=True)
 
