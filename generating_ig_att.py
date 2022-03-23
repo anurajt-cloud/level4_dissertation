@@ -24,13 +24,13 @@ def ig_att(foldername, tname):
         test_y = np.load("./eval_data_10k/teset_y.npy", allow_pickle=True)
         test_x = np.load("./eval_data_10k/teset_x.npy", allow_pickle=True)
         # attributions = []
-        for i in range(1,11):
+        for i in range(5,11):
             m = tf.keras.models.load_model(path+foldername+"/Model_cv"+str(i)+".h5")
             dx = test_x[i-1].reshape(-1, test_x[i-1].shape[1], 1).astype(np.float32)
             dy = test_y[i-1].astype(np.float32)
             np.save("./ig_attributions/"+foldername+"/att"+str(i),cal_ig(m, dx, dy))
             # cal_ig(m, dx, dy)
-        print(foldername, "saved!")
+            print(foldername+"/att"+str(i), "saved!")
     elif tname=="pl":
         test_c0 = np.genfromtxt('./Data/test_patients_fc.csv', delimiter=',')
         test_c1 = np.genfromtxt('./Data/test_patients_sc.csv', delimiter=',')
@@ -49,7 +49,7 @@ print("Generating Attributions")
 # print("cnn_pl saved!")
 # np.save("./ig_attributions/lstm_pl", ig_att("lstm_pl", "pl")) DONE!
 # print("lstm_pl saved!")
-ig_att("cnn_ph", "ph")
+# ig_att("cnn_ph", "ph") DONE!
 # print("cnn_ph_eg saved!")
 ig_att("lstm_ph", "ph")
 # print("lstm_ph_eg saved!")
