@@ -33,13 +33,15 @@ y = channel_1_data[:,-2]
 kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=1)
 k = 1
 c1 = []
-c1_x = []
+c1_y = []
 for train_ix, test_ix in kfold.split(X, y):
     train_x ,train_y = X[train_ix], y[train_ix]
     test_x ,test_y = X[test_ix], y[test_ix]
     print(test_y.shape)
     c1.append(test_y)
-    c1_x.append(test_x)
+    c1_y.append(train_y)
 
-np.save("./eval_data_10k/teset_x", c1_x,allow_pickle=True)
+# Generating the CV datasets
+# np.save("./eval_data_10k/teset_x", c1_x,allow_pickle=True)
+# np.save("./eval_data_10k/trset_y", c1_y,allow_pickle=True)
 # np.save("./eval_data_10k/teset_y", c1, allow_pickle=True)
