@@ -86,4 +86,4 @@ for train_ix, test_ix in kfold.split(X, y):
 # np.save("./eval_data_10k/teset_x", c1_x,allow_pickle=True)
 # np.save("./eval_data_10k/trset_y", c1_y,allow_pickle=True)
 # np.save("./eval_data_10k/teset_y", c1, allow_pickle=True)
-np.save("./eval_data_10k/resamp_trset_y", resamp_train_y, allow_pickle=True)
+# np.save("./eval_data_10k/resamp_trset_y", resamp_train_y, allow_pickle=True)
