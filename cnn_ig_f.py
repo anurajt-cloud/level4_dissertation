@@ -38,29 +38,41 @@ from tensorflow.keras.metrics import CategoricalAccuracy
 from sklearn.model_selection import train_test_split
 from alibi.explainers import IntegratedGradients
 
+# Check for GPU
+print("You are using Tensorflow version", tf.__version__)
+
+print(tf.config.list_physical_devices('GPU'))
+
+print("-"*100)
+
+# Defining the path
 path = './'
-print("starting loading")
-channel_1_data = np.empty(shape=[0, 462])
 
-c1_data = glob.glob(path+'Data/normal_ex_method_0.csv')
+# Loading data
+train_c1 = np.genfromtxt(path+'Data/train_patients_sc.csv', delimiter=',')
+train_c0 = np.genfromtxt(path+'Data/train_patients_fc.csv', delimiter=',')
+test_c1 = np.genfromtxt(path+'Data/test_patients_sc.csv', delimiter=',')
+test_c0 = np.genfromtxt(path+'Data/test_patients_fc.csv', delimiter=',')
 
-for j in c1_data:
-    print('Loading ', j)
-    csvrows = np.loadtxt(j, delimiter=',')
-    channel_1_data = np.append(channel_1_data, csvrows, axis=0)
+train_x_c01 = np.concatenate((train_c0[:, :-2], train_c1[:, :-2]), axis=1)
+train_y_c01 = np.concatenate((train_c0[:, -2:], train_c1[:, -2:]), axis=1)
 
-print(channel_1_data.shape)
+test_x_c01 = np.concatenate((test_c0[:, :-2], test_c1[:, :-2]), axis=1)
+test_y_c01 = np.concatenate((test_c0[:, -2:], test_c0[:, -2:]), axis=1)
 
-channel_2_data = np.empty(shape=[0, 462])
+train_x = train_x_c01.reshape(-1, train_x_c01.shape[1], 1).astype('float32')
+test_x = test_x_c01.reshape(-1, test_x_c01.shape[1], 1).astype('float32')
 
-c2_data = glob.glob('./Data/normal_ex_method_1.csv')
+train_y = tf.keras.utils.to_categorical(train_y_c01[:,0])
+test_y = tf.keras.utils.to_categorical(test_y_c01[:,0])
 
-for j in c2_data:
-    print('Loading ', j)
-    csvrows = np.loadtxt(j, delimiter=',')
-    channel_2_data = np.append(channel_2_data, csvrows, axis=0)
+print("Train:")
+print("x:", train_x.shape, "y:", train_y.shape)
+print("Test")
+print("x:", test_x.shape, "y:", test_y.shape)
 
-print(channel_2_data.shape)
+print("-"*100)
+
 
 def showResults(test, pred, model_name):
     accuracy = accuracy_score(test, pred)
@@ -74,17 +86,15 @@ def showResults(test, pred, model_name):
     print("f1score macro : {}".format(f1score_macro))
     print("f1score micro : {}".format(f1score_micro))
     cm=confusion_matrix(test, pred, labels=[1,2,3,4,5,6,7,8])
-    return [model_name, round(accuracy,3), round(precision,3) , round(recall,3) , round(f1score_macro,3), 
-            round(f1score_micro, 3), cm]
+    return (model_name, round(accuracy,3), round(precision,3) , round(recall,3) , round(f1score_macro,3), 
+            round(f1score_micro, 3), cm)
 
-X = np.concatenate((channel_1_data[:,:-2],channel_2_data[:,:-2]), axis=1)
-y = channel_1_data[:,-2]
 
-print(tf.data.Dataset.from_tensor_slices((X,y)))
+opt = Adam(learning_rate=0.001)
 
-def getCNNModel(i1, i2):
+def getCNNModel():
     
-    input = keras.layers.Input(shape=(i1,i2))
+    input = keras.layers.Input(shape=(train_x.shape[1],train_x.shape[2]))
     x = keras.layers.Conv1D(kernel_size=16, filters=32, strides=1, use_bias=True, kernel_initializer='VarianceScaling')(input)
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.LeakyReLU(alpha=0.3)(x)
@@ -126,6 +136,28 @@ def getCNNModel(i1, i2):
     model.compile(loss='categorical_crossentropy',optimizer=opt,metrics=['accuracy'])
     return model
 
+cnn1 = getCNNModel()
+# cnn2 = getCNNModel()
+# cnn3 = getCNNModel()
+# cnn4 = getCNNModel()
+# cnn5 = getCNNModel()
+# cnn6 = getCNNModel()
+# cnn7 = getCNNModel()
+# cnn8 = getCNNModel()
+# cnn9 = getCNNModel()
+# cnn10 = getCNNModel()
+
+modellist = [cnn1]#, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
+
+lamb = 0.0001
+num_epochs = 10
+batch_size = 50
+optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
+loss_fn = tf.keras.losses.CategoricalCrossentropy()
+val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
+train_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
+test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
 
 #train step
 # @tf.function
@@ -155,9 +187,8 @@ def train_step(model_m, inputs, labels):
     gradients = tape.gradient(total_loss, model_m.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model_m.trainable_variables))
     return predictions,total_loss
-
 # function to train a model
-def training(model, train_x, train_y):
+def training(model):
     training_acc = []
     training_loss = []
     validation_acc = []
@@ -177,15 +208,15 @@ def training(model, train_x, train_y):
         val_x = train_x[val_indices]
         val_y = train_y[val_indices]
         
-        e_loss = np.array([])
+
         for i in range(0, len(new_train_x), batch_size):
             x_batch_train = new_train_x[new_indices[i:min(i + batch_size, len(new_train_x))]]
             y_batch_train = new_train_y[new_indices[i:min(i + batch_size, len(new_train_y))]]
 
-            predictions,epoch_loss = train_step(model, tf.convert_to_tensor(x_batch_train), tf.convert_to_tensor(y_batch_train))
-            e_loss = np.append(e_loss, epoch_loss.numpy())
+            predictions,epoch_loss = train_step(model, x_batch_train, y_batch_train)
+
             train_acc_fn(y_batch_train, predictions)
-            print(i)
+
         train_acc = train_acc_fn.result().numpy()
 
         # validating
@@ -195,110 +226,65 @@ def training(model, train_x, train_y):
 
         # appending training loss and acc
         training_acc.append(train_acc)
-        training_loss.append(e_loss.mean())
+        training_loss.append(epoch_loss.numpy())
         # appending validation loss and acc
         validation_acc.append(val_acc_fn.result().numpy())
         validation_loss.append(val_loss)
 
-        print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, e_loss.mean(), val_acc_fn.result().numpy(), val_loss, time.time()-start_time))
+        print('Epoch {} - train_accuracy: {:.4f}, train_loss: {:.4f} | val_accuracy: {:.4f}, val_loss: {:.4f} ({:.1f} seconds / epoch)'.format(epoch + 1, train_acc, epoch_loss, val_acc_fn.result().numpy(), val_loss, time.time()-start_time))
 
         start_time = time.time()
         train_acc_fn.reset_states()
         val_acc_fn.reset_states()
     return training_loss, validation_loss, training_acc, validation_acc
 
-kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=1)
-k = 1
-for train_ix, test_ix in kfold.split(X, y):
-    train_x ,train_y = X[train_ix], y[train_ix]
-    test_x ,test_y = X[test_ix], y[test_ix]
-    
-    N = train_x[train_y==1.0]
-    L = train_x[train_y==2.0]
-    R = train_x[train_y==3.0]
-    V = train_x[train_y==4.0]
-    A = train_x[train_y==5.0]
-    F = train_x[train_y==6.0]
-    f = train_x[train_y==7.0]
-    I = train_x[train_y==8.0]
+modelosses = []
+modeleval_losses = []
+modelacc = []
+modeleval_acc = []
+for m in range(len(modellist)):
+    print("*"*10,"Model",m+1,"*"*10)
+    tl, vl, ta, va = training(modellist[m])
+    modelosses.append(tl)
+    modeleval_losses.append(vl)
+    modelacc.append(ta)
+    modeleval_acc.append(va)
 
-    seed=42
-    np.random.seed(seed)
-    def downsample(arr, n, seed):
-        downsampled = resample(arr,replace=False,n_samples=n, random_state=seed)
-        return downsampled
+modelosses = np.array(modelosses)
+modeleval_losses = np.array(modeleval_losses)
+modelacc = np.array(modelacc)
+modeleval_acc = np.array(modeleval_acc)
+# losses , eval_losses, accuracy, eval_accuracy
+history = np.array([modelosses, modeleval_losses, modelacc, modeleval_acc])
 
-    def upsample(arr, n, seed):
-        upsampled = resample(arr,replace=True,n_samples=n,random_state=seed)
-        return upsampled
+modelpreds = []
+for m in range(len(modellist)):
+    print("*"*10, "Model", m+1, "*"*10)
+    modelpreds.append(modellist[m].predict(test_x, verbose=1))
 
-    all_class = [N,L,R,V,A,F,f,I]
-    abn_class = [L,R,V,A,F,f,I]
-    print("staring resampling")
-    mean_val = np.mean([len(i) for i in abn_class], dtype= int)
-    train_r_x = []
-    train_r_y = []
-    # Resampling the data
-    for i in range(len(all_class)):
-        if all_class[i].shape[0]> mean_val:
-            all_class[i] = downsample(all_class[i],mean_val,seed)
-        elif all_class[i].shape[0]< mean_val:
-            all_class[i] = upsample(all_class[i], mean_val,seed)
-        
-        train_r_x.append(all_class[i])
-        train_r_y.append(np.full(all_class[i].shape[0], i+1))
-    # Shuffling and saving the data into files
-    train_x_sampled = np.concatenate(train_r_x)
+results = []
+cnn_actual_value=np.argmax(test_y,axis=1)
+for p in range(len(modelpreds)):
+    print("*"*10,"Model",p+1,"*"*10)
+    results.append(showResults(cnn_actual_value,np.argmax( modelpreds[p],axis=1),'CNN'+str(p)))
 
-    train_y_sampled = np.concatenate(train_r_y)
-    print(train_x_sampled.shape,train_y_sampled.shape)
+cms = []
+for p in modelpreds:
+    cms.append(confusion_matrix(cnn_actual_value, np.argmax(p,axis=1), normalize='true'))
 
-    verbose = 1
-    epochs = 10
-    batch_size = 25
+# Saving data LSTM patient leavout
+new_path = path+"eval_data_10k/cnn_pl_ig/"
 
-    opt = Adam(learning_rate=0.0001)
+modelpreds = np.array(modelpreds)
+results = np.array(results)
+cms = np.array(cms)
+# modelhistory = np.array(modelhistory)
+np.save(new_path+"cnn_modelpreds.npy", modelpreds)
+np.save(new_path+"cnn_results.npy", results)
+np.save(new_path+"cnn_cms.npy", cms)
+np.save(new_path+"cnn_history.npy", history)
 
-    reduce_lr = keras.callbacks.ReduceLROnPlateau(
-            factor=0.1,
-            patience=2,
-            min_lr=0.0001 * 0.0001)
-
-    train_x_sampled = train_x_sampled.reshape(-1, train_x_sampled.shape[1], 1).astype('float32')
-    test_x = test_x.reshape(-1, test_x.shape[1], 1).astype('float32')
-    print(train_x_sampled.shape[1], test_x.shape[2])
-    train_y_sampled = tf.keras.utils.to_categorical(train_y_sampled)
-    
-    print("*"*15, "Model", k, "*"*15)
-    model = getCNNModel(train_x_sampled.shape[1],train_x_sampled.shape[2])
-    #h = model.fit(train_x_sampled,train_y_sampled,epochs=epochs,batch_size=batch_size,validation_split=0.1,verbose=verbose, callbacks=[reduce_lr])
-    
-    lamb = 0.0001
-    num_epochs = 10
-    batch_size = 50
-    optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
-    loss_fn = tf.keras.losses.CategoricalCrossentropy()
-    val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
-    train_acc_fn = tf.keras.metrics.CategoricalAccuracy()
-    val_acc_fn = tf.keras.metrics.CategoricalAccuracy()
-    test_acc_fn = tf.keras.metrics.CategoricalAccuracy()
-
-    tl, vl, ta, va = training(model, train_x_sampled, train_y_sampled)
-    
-    history = np.array([tl, vl, ta, va])
-
-    preds = np.argmax(model.predict(test_x, verbose=1),axis=1)
-    
-    results = showResults(test_y, preds, "Model_cv"+str(k))
-
-    cms = confusion_matrix(test_y, preds, normalize='true')
-    
-    new_path = './eval_data_10k/cnn_ph_ig/'
-
-    model.save(new_path+'Model_cv'+str(k)+'.h5')
-    np.save(new_path+"preds_cv"+str(k)+'.npy', preds)
-    np.save(new_path+"results_cv"+str(k)+'.npy', results)
-    np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
-    np.save(new_path+"history_cv"+str(k)+'.npy', history)
-    tf.keras.backend.clear_session()
-    k+=1
+# Saving the models
+for m in range(len(modellist)):
+    print("*"*10,"Model", m+1, "*"*10)
+    modellist[m].save(new_path+"Model"+str(m)+".h5")
