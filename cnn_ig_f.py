@@ -214,7 +214,7 @@ def training(model, train_x, train_y):
         train_acc_fn.reset_states()
         val_acc_fn.reset_states()
     return training_loss, validation_loss, training_acc, validation_acc
-cnn1 = getCNNModel(train_x.shape[1],train_y.shape[2])
+cnn1 = getCNNModel(train_x.shape[1],train_x.shape[2])
 # cnn2 = getCNNModel()
 # cnn3 = getCNNModel()
 # cnn4 = getCNNModel()
