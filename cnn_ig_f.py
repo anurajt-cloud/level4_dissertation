@@ -229,7 +229,7 @@ modellist = [cnn1]#, cnn2, cnn3, cnn4, cnn5, cnn6, cnn7, cnn8, cnn9, cnn10]
 
 lamb = 0.0001
 num_epochs = 10
-batch_size = 50
+batch_size = 20
 optimizer = tf.optimizers.Adam(learning_rate = 0.0001)
 loss_fn = tf.keras.losses.CategoricalCrossentropy()
 val_loss_fn = tf.keras.losses.CategoricalCrossentropy()
