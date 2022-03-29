@@ -244,7 +244,7 @@ modelacc = []
 modeleval_acc = []
 for m in range(len(modellist)):
     print("*"*10,"Model",m+1,"*"*10)
-    tl, vl, ta, va = training(modellist[m])
+    tl, vl, ta, va = training(modellist[m], train_x, train_y)
     modelosses.append(tl)
     modeleval_losses.append(vl)
     modelacc.append(ta)
