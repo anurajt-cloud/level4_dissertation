@@ -175,7 +175,6 @@ def training(model, train_x, train_y, bs):
 kfold = StratifiedKFold(n_splits=10, shuffle=True, random_state=1)
 k = 1
 for train_ix, test_ix in kfold.split(X, y):
-    # if k>=10:
     train_x ,train_y = X[train_ix], y[train_ix]
     test_x ,test_y = X[test_ix], y[test_ix]
     
@@ -266,4 +265,4 @@ for train_ix, test_ix in kfold.split(X, y):
     np.save(new_path+"cms_cv"+str(k)+'.npy', cms)
     np.save(new_path+"history_cv"+str(k)+'.npy', history)
     tf.keras.backend.clear_session()
-    # k+=1
+
