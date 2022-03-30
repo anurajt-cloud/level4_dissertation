@@ -13,7 +13,7 @@ The following structure showcases the data structure of the project and explanat
 
 |---Data  (Would contain the preprocess data) \
 |---Data_processing \
-|~    |---data_preprocess.ipynb  (Extracting the beats) \
+|&nbsp    |---data_preprocess.ipynb  (Extracting the beats) \
 |    |---data_split_resample.ipynb (Resampling the data for patient leave-out method) \
 |---ECG \
 |    |---eager_ops.py  (Expected gradients methods) \
