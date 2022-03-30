@@ -17,8 +17,8 @@ The following structure showcases the data structure of the project and explanat
 |    |---data_preprocess.ipynb      (Extracting the beats)
 |    |---data_split_resample.ipynb  (Resampling the data for patient leave-out method)
 |---ECG
-|    |---eager_ops.py       (Expected gradients methods)
-|    |---IG.py              (Integrated gradients methods)
+|    |---eager_ops.py               (Expected gradients methods)
+|    |---IG.py                      (Integrated gradients methods)
 |---cnn_ph_eg.py            (CNN beat hold-out with EG)
 |---cnn_ph.py               (CNN beat hold-out)
 |---cnn_pl_eg.py            (CNN patient leave-out with EG)
