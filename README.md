@@ -7,7 +7,10 @@ Student ID: 2334152T
 
 In this project we study various gradient based explainability methods and examine the change in model performance with use of attribution methods. 
 
-##### Directory structure:
+### Abstract
+Add the abstract
+
+### Directory structure:
 
 The following structure showcases the data structure of the project and explanations for each file.
 
