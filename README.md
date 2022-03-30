@@ -11,9 +11,10 @@ In this project we study various gradient based explainability methods and exami
 
 The following structure showcases the data structure of the project and explanations for each file.
 
+<pre>
 |---Data  (Would contain the preprocess data) \
 |---Data_processing \
-|&nbsp    |---data_preprocess.ipynb  (Extracting the beats) \
+|    |---data_preprocess.ipynb  (Extracting the beats) \
 |    |---data_split_resample.ipynb (Resampling the data for patient leave-out method) \
 |---ECG \
 |    |---eager_ops.py  (Expected gradients methods) \
@@ -35,6 +36,6 @@ The following structure showcases the data structure of the project and explanat
 |---svc_pl.py  (SVC patient leave-out) \
 |---.gitignore \
 |---README.md \
-|---manual.md \
-
+|---manual.md 
+</pre>
 All the models were run on the GPU due to the long training times.
