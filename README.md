@@ -8,7 +8,29 @@ Student ID: 2334152T
 In this project we study various gradient based explainability methods and examine the change in model performance with use of attribution methods. 
 
 ### Abstract
-Add the abstract
+<pr>
+  Heart diseases resulting in heart attacks and strokes are a major cause for deaths around the
+world. Studies have revealed that these attacks can be forestalled by detection of arrhythmia.
+Advancements in machine learning techniques have resulted in various neural networks being
+employed to successfully detect arrhythmia by classifying beats into normal and abnormal classes.
+However, their use has mostly been restricted to research rather than full-scale deployment in
+medicine due to the lack of explainability for the model predictions, i.e., the black box design.
+  In our thesis we adopt the explainability method known as Expected Gradients, an evolution
+of Integrated gradients, to provide attributions that justify model predictions. We further
+incorporate the loss generated from the attributions into the training process to help improve
+model performances. The attribution method is applied to a convolutional neural network (CNN)
+consisting of four residual blocks with residual skip connections and an 11-layer long short-term
+memory neural network (LSTM) to measure its effectiveness. Data belonging to 47 patients from
+the MIT-BIH arrhythmia dataset was used to pre-process and extract heart beats. These beats
+were split into two evaluation datasets using the beat hold-out and patient leave-out method.
+This was done to mimic the real life scenario of models predicting seen and unseen patients’
+data. 
+  The results showcase that integration of the expected gradient attributions into the training
+process helps improve both the models’ precision and recall on unseen patient data. These results
+are further supported by the visualisations of the generated attributions and statistical tests like
+Kruskal test, Wilcoxon Signed Rank test, and F-oneway ANOVA test.
+
+</pr>
 
 ### Directory structure:
 
